@@ -1,4 +1,6 @@
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useState, useRef, useEffect, useCallback, useMemo } from "react";
+
+const API_BASE = process.env.REACT_APP_API_BASE || "http://127.0.0.1:8000";
 
 // ─── STYLES ───────────────────────────────────────────────────────────────────
 const css = `
@@ -617,6 +619,256 @@ const css = `
                       linear-gradient(90deg, rgba(255,255,255,0.012) 1px, transparent 1px);
     background-size: 40px 40px;
   }
+
+  /* workspace */
+  .workspace-shell {
+    flex: 1; min-height: 0; position: relative;
+    display: flex; flex-direction: column; overflow: hidden;
+  }
+  .workspace-shell.locked { filter: blur(8px); pointer-events: none; user-select: none; }
+  .workspace-body {
+    flex: 1; min-height: 0; overflow-y: auto; padding: 22px 24px 28px;
+    display: flex; flex-direction: column; gap: 16px;
+  }
+  .workspace-grid {
+    display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+  }
+  .ws-card {
+    background: rgba(255,255,255,0.025);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 16px 18px;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.03);
+  }
+  .ws-card.hero {
+    background:
+      radial-gradient(circle at top right, rgba(232,184,75,0.12), transparent 36%),
+      linear-gradient(145deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+  }
+  .ws-card-title {
+    font-family: var(--display); font-size: 18px; font-weight: 700;
+    color: var(--text); margin-bottom: 6px;
+  }
+  .ws-card-sub {
+    font-size: 11px; line-height: 1.6; color: var(--text2);
+  }
+  .ws-kicker {
+    font-size: 9px; letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--gold); font-weight: 700; margin-bottom: 10px;
+  }
+  .ws-stat-row {
+    display: grid; grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px; margin-top: 14px;
+  }
+  .ws-stat {
+    padding: 12px; border-radius: 12px; background: rgba(255,255,255,0.025);
+    border: 1px solid var(--border);
+  }
+  .ws-stat-label {
+    font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text3);
+  }
+  .ws-stat-value {
+    margin-top: 8px; font-size: 18px; font-weight: 700; color: var(--gold2);
+  }
+  .ws-list {
+    display: flex; flex-direction: column; gap: 10px;
+  }
+  .ws-list-item {
+    padding: 12px 14px; border-radius: 12px; border: 1px solid var(--border);
+    background: rgba(255,255,255,0.02);
+    transition: border-color 0.18s ease, background 0.18s ease;
+  }
+  .ws-list-item.expandable {
+    cursor: pointer;
+  }
+  .ws-list-item.expandable:hover {
+    border-color: rgba(232,184,75,0.18);
+    background: rgba(255,255,255,0.03);
+  }
+  .ws-list-title {
+    font-size: 12px; font-weight: 700; color: var(--text);
+  }
+  .ws-list-desc {
+    margin-top: 5px; font-size: 11px; line-height: 1.6; color: var(--text2);
+  }
+  .ws-list-meta {
+    margin-top: 8px; display: inline-flex; align-items: center; gap: 6px;
+    font-size: 9px; font-family: var(--mono); color: var(--cyan);
+    text-transform: uppercase; letter-spacing: 0.08em;
+  }
+  .ws-item-head {
+    display: flex; align-items: center; gap: 10px;
+  }
+  .ws-expand {
+    margin-left: auto; color: var(--text3); font-size: 14px; line-height: 1;
+  }
+  .ws-item-detail {
+    margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border);
+    font-size: 11px; line-height: 1.65; color: var(--text2);
+  }
+  .ws-chip-row {
+    display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px;
+  }
+  .ws-chip {
+    padding: 5px 10px; border-radius: 999px; border: 1px solid var(--border2);
+    background: rgba(255,255,255,0.03); font-size: 10px; color: var(--text2);
+  }
+  .ws-actions {
+    display: flex; gap: 10px; flex-wrap: wrap; margin-top: 14px;
+  }
+  .ws-btn {
+    border: 1px solid rgba(232,184,75,0.2);
+    background: var(--gold-dim);
+    color: var(--gold2);
+    border-radius: 999px;
+    padding: 8px 14px;
+    font-family: var(--body);
+    font-size: 11px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  .ws-btn.secondary {
+    border-color: var(--border2);
+    background: rgba(255,255,255,0.03);
+    color: var(--text2);
+  }
+  .ws-empty {
+    padding: 18px; border: 1px dashed var(--border2); border-radius: 12px;
+    color: var(--text3); font-size: 11px; line-height: 1.6;
+    background: rgba(255,255,255,0.015);
+  }
+  .alert-grid {
+    display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px;
+  }
+  .alert-card {
+    padding: 14px 16px; border-radius: 14px; border: 1px solid var(--border);
+    background: linear-gradient(145deg, rgba(255,255,255,0.03), rgba(255,255,255,0.015));
+  }
+  .alert-card.live { border-color: rgba(0,212,200,0.22); }
+  .alert-top {
+    display: flex; align-items: center; gap: 10px; margin-bottom: 10px;
+  }
+  .alert-icon {
+    width: 34px; height: 34px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    background: rgba(255,255,255,0.05); font-size: 15px;
+  }
+  .alert-title { font-size: 12px; font-weight: 700; color: var(--text); }
+  .alert-body { font-size: 11px; line-height: 1.6; color: var(--text2); }
+  .alert-tag {
+    margin-top: 10px; display: inline-block; padding: 4px 8px; border-radius: 999px;
+    font-size: 9px; font-family: var(--mono); letter-spacing: 0.08em; text-transform: uppercase;
+    background: rgba(0,212,200,0.1); color: var(--cyan);
+  }
+  .rp-mini-list {
+    display: flex; flex-direction: column; gap: 8px;
+  }
+  .rp-mini-item {
+    padding: 10px 12px; border-radius: 10px; border: 1px solid var(--border);
+    background: rgba(255,255,255,0.02);
+  }
+  .rp-mini-title {
+    font-size: 10px; font-weight: 700; color: var(--text);
+  }
+  .rp-mini-desc {
+    margin-top: 5px; font-size: 10px; line-height: 1.55; color: var(--text2);
+  }
+  .deck-overlay {
+    position: absolute; inset: 0; z-index: 30;
+    display: flex; align-items: center; justify-content: center;
+    padding: 28px;
+    background: linear-gradient(180deg, rgba(7,8,13,0.78), rgba(7,8,13,0.92));
+    backdrop-filter: blur(10px);
+  }
+  .deck-card {
+    width: min(560px, 100%);
+    border-radius: 28px;
+    border: 1px solid rgba(255,255,255,0.08);
+    background:
+      radial-gradient(circle at top, rgba(232,184,75,0.12), transparent 38%),
+      linear-gradient(160deg, rgba(18,21,32,0.98), rgba(10,12,18,0.98));
+    box-shadow: 0 24px 80px rgba(0,0,0,0.42);
+    padding: 28px 28px 24px;
+  }
+  .deck-step {
+    font-size: 10px; font-family: var(--mono); letter-spacing: 0.14em;
+    color: var(--gold2); text-transform: uppercase;
+  }
+  .deck-head {
+    margin-top: 18px; display: flex; align-items: flex-start; justify-content: space-between; gap: 16px;
+  }
+  .deck-kicker {
+    font-size: 11px; font-weight: 700; color: var(--cyan); letter-spacing: 0.08em; text-transform: uppercase;
+  }
+  .deck-title {
+    margin-top: 8px; font-family: var(--display); font-size: 31px; line-height: 1.08; color: var(--text);
+  }
+  .deck-copy {
+    margin-top: 12px; font-size: 12px; line-height: 1.7; color: var(--text2);
+    max-width: 420px;
+  }
+  .deck-orb {
+    width: 72px; height: 72px; border-radius: 22px; flex-shrink: 0;
+    background: linear-gradient(135deg, rgba(232,184,75,0.18), rgba(0,212,200,0.16));
+    border: 1px solid rgba(255,255,255,0.08);
+    display: flex; align-items: center; justify-content: center; font-size: 26px;
+  }
+  .deck-track {
+    margin-top: 20px; height: 5px; border-radius: 999px; overflow: hidden;
+    background: rgba(255,255,255,0.06);
+  }
+  .deck-fill {
+    height: 100%; border-radius: inherit; background: linear-gradient(90deg, var(--gold), var(--cyan));
+    transition: width 0.35s ease;
+  }
+  .deck-options {
+    margin-top: 22px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px;
+  }
+  .deck-option {
+    padding: 14px 14px; border-radius: 16px;
+    border: 1px solid var(--border2); background: rgba(255,255,255,0.03);
+    color: var(--text); font-family: var(--body); font-size: 12px; font-weight: 600;
+    text-align: left; cursor: pointer; transition: all 0.18s ease;
+  }
+  .deck-option:hover { border-color: rgba(232,184,75,0.24); transform: translateY(-1px); }
+  .deck-freeform {
+    margin-top: 18px; display: flex; gap: 10px; align-items: center;
+  }
+  .deck-input {
+    flex: 1; min-height: 46px; border-radius: 16px; border: 1px solid var(--border2);
+    background: rgba(255,255,255,0.03); color: var(--text); padding: 0 14px;
+    font-family: var(--body); font-size: 12px; outline: none;
+  }
+  .deck-input:focus { border-color: rgba(232,184,75,0.3); }
+  .deck-submit {
+    min-width: 116px; height: 46px; border-radius: 16px; border: none; cursor: pointer;
+    background: linear-gradient(135deg, var(--gold), #c8780a); color: var(--bg);
+    font-family: var(--body); font-size: 11px; font-weight: 800; letter-spacing: 0.04em;
+  }
+  .deck-note {
+    margin-top: 14px; font-size: 10px; line-height: 1.6; color: var(--text3);
+  }
+
+  .nav-btn:disabled,
+  .hdr-btn:disabled,
+  .ws-btn:disabled {
+    opacity: 0.45; cursor: not-allowed;
+  }
+
+  @media (max-width: 1100px) {
+    .workspace-grid, .alert-grid { grid-template-columns: 1fr; }
+  }
+
+  @media (max-width: 760px) {
+    .deck-card { padding: 22px 18px 18px; border-radius: 22px; }
+    .deck-head { flex-direction: column; }
+    .deck-title { font-size: 26px; }
+    .deck-options { grid-template-columns: 1fr; }
+    .deck-freeform { flex-direction: column; }
+    .deck-submit { width: 100%; }
+    .ws-stat-row { grid-template-columns: 1fr; }
+  }
 `;
 
 // ─── DATA ─────────────────────────────────────────────────────────────────────
@@ -759,12 +1011,347 @@ const NUDGE_RULES = [
   { trigger: "masterclass", icon: "🏛️", title: "Meet your instructors live", desc: "Your course instructors are speaking at ET Global Business Summit — early-bird closing.", cta: "Register →" },
 ];
 
+const PROFILE_DECK = [
+  { nodeId: "q1", icon: "Stocks", hint: "Profile setup", title: "What do you want ET to help you with most?" },
+  { nodeId: "q2", icon: "Goal", hint: "Goal mapping", title: "What is your most important money goal right now?" },
+  { nodeId: "q3", icon: "Portfolio", hint: "Portfolio baseline", title: "Where are you in your investing journey today?" },
+  { nodeId: "q4", icon: "Risk", hint: "Risk fit", title: "How much market movement feels comfortable to you?" },
+  { nodeId: "q5", icon: "Alerts", hint: "Delivery preference", title: "How should ET show up for you every day?" },
+];
+
 const FB_TAGS_POS = ["Highly Relevant", "Accurate", "Great UX", "Strong Recommendations", "Time-saving"];
 const FB_TAGS_NEG = ["Too Generic", "Not Relevant", "Too Many Steps", "Missing Products", "Unclear"];
 
 function nowTime() { return new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }); }
 
+function looksLikeQuestion(text) {
+  const trimmed = String(text || "").trim().toLowerCase();
+  if (!trimmed) return false;
+  return trimmed.includes("?") || /^(what|why|how|when|where|which|who|can|could|should|would|will|is|are|do|does|did|best)\b/.test(trimmed);
+}
+
+function normalizeResponse(payload) {
+  return payload?.result || payload;
+}
+
+function titleize(value) {
+  return String(value || "")
+    .replace(/_/g, " ")
+    .replace(/\b\w/g, (char) => char.toUpperCase());
+}
+
+function mapProfileToConversation(profile) {
+  return [
+    `The user is interested in ${profile.interests || "financial intelligence"}.`,
+    `Their main goal is ${profile.goal || "building a stronger financial plan"}.`,
+    `Their current portfolio looks like ${profile.investments || "an early-stage investing setup"}.`,
+    `Their risk appetite is ${profile.risk || "moderate"}.`,
+    `They prefer ${profile.engagement || "smart ET updates"} as their engagement mode.`,
+    "Build the full ET Concierge journey across recommendations, RAG, onboarding, cross-sell, marketplace, and action dispatch.",
+  ].join(" ");
+}
+
+function mapProfileCard(profile, conciergeData) {
+  const persona = conciergeData?.core?.persona;
+  if (!persona) return profile;
+
+  return {
+    interests: persona.persona_type || profile.interests,
+    goal: (persona.financial_goals || []).join(", ") || profile.goal,
+    investments: profile.investments,
+    risk: `${persona.risk_appetite || profile.risk} · ${persona.risk_score ?? "?"}/10`,
+    engagement: profile.engagement,
+  };
+}
+
+function badgeForCategory(category = "") {
+  const normalized = String(category).toLowerCase();
+  if (normalized.includes("partner") || normalized.includes("insurance") || normalized.includes("loan") || normalized.includes("wealth") || normalized.includes("credit")) {
+    return { badge: "rb-partner", badgeText: "Partner" };
+  }
+  if (normalized.includes("event") || normalized.includes("masterclass") || normalized.includes("learning")) {
+    return { badge: "rb-event", badgeText: "Experience" };
+  }
+  if (normalized.includes("free")) {
+    return { badge: "rb-free", badgeText: "Free" };
+  }
+  return { badge: "rb-gold", badgeText: "ET Pick" };
+}
+
+function recommendationItemsFromData(conciergeData, fallbackItems) {
+  const items = conciergeData?.core?.recommendations?.recommended_products || [];
+  if (!items.length) return fallbackItems;
+
+  return items.map((item) => {
+    const badge = badgeForCategory(item.category);
+    return {
+      icon: "✨",
+      title: item.name,
+      desc: item.summary,
+      reason: item.why_it_fits,
+      ...badge,
+    };
+  });
+}
+
+function partnerItemsFromData(conciergeData, fallbackItems) {
+  const items = conciergeData?.marketplace?.offers || [];
+  if (!items.length) return fallbackItems;
+
+  return items.map((item) => ({
+    icon: item.category === "insurance" ? "🛡️" : item.category === "loan" ? "🏦" : item.category === "credit_card" ? "💳" : "📈",
+    title: item.product_name,
+    desc: item.next_step,
+    reason: item.fit_summary,
+    badge: "rb-partner",
+    badgeText: titleize(item.category),
+  }));
+}
+
+function masterclassItemsFromData(conciergeData, fallbackItems) {
+  const touchpoints = conciergeData?.ecosystem?.prioritized_touchpoints || [];
+  const learning = touchpoints.filter((item) => ["learning", "events"].includes(String(item.pillar).toLowerCase()));
+  if (!learning.length) return fallbackItems;
+
+  return learning.map((item) => ({
+    icon: String(item.pillar).toLowerCase() === "events" ? "🏛️" : "🎓",
+    title: item.name,
+    desc: item.cta,
+    reason: item.why_for_this_user,
+    badge: "rb-event",
+    badgeText: titleize(item.pillar),
+  }));
+}
+
+function financialWidgetData(profile, conciergeData) {
+  const navigator = conciergeData?.financial_life;
+  const persona = conciergeData?.core?.persona;
+  if (!navigator || !persona) return null;
+
+  const health = Math.max(30, Math.min(96, 58 + ((persona.risk_score || 5) * 4) - ((navigator.portfolio_gaps || []).length * 6)));
+  const diversification = Math.max(24, Math.min(92, 70 - ((navigator.portfolio_gaps || []).length * 8)));
+  const goalProgress = Math.max(25, Math.min(90, 35 + ((navigator.immediate_needs || []).length * 8)));
+
+  const suggestions = [
+    ...(navigator.portfolio_gaps || []).slice(0, 1).map((item) => ["⚡", "Gap", item]),
+    ...(navigator.immediate_needs || []).slice(0, 1).map((item) => ["🎯", "Need", item]),
+    ...(navigator.suggested_et_surfaces || []).slice(0, 1).map((item) => ["🧭", "ET Surface", `Best next surface: ${item}`]),
+  ];
+
+  return {
+    health,
+    diversification,
+    goalProgress,
+    goalLabel: (persona.financial_goals || [profile.goal?.replace(/[^\w\s]/g, "") || "wealth"]).join(", "),
+    suggestions,
+  };
+}
+
 // ─── AGENT BADGE ──────────────────────────────────────────────────────────────
+function extractArray(value) {
+  if (Array.isArray(value)) return value.filter(Boolean);
+  if (!value) return [];
+  if (typeof value === "object") return Object.values(value).filter(Boolean);
+  return [value];
+}
+
+function actionItemsFromData(conciergeData) {
+  const actions = extractArray(conciergeData?.core?.dispatch?.actions);
+  return actions.map((item, index) => ({
+    title: item.label || item.name || `Suggested action ${index + 1}`,
+    desc: item.description || item.summary || item.next_step || "Recommended next step from the concierge pipeline.",
+    meta: item.channel || item.type || "dispatch",
+  }));
+}
+
+function onboardingItemsFromData(conciergeData) {
+  const items = extractArray(conciergeData?.ecosystem?.onboarding_path);
+  return items.map((item, index) => ({
+    title: item.step || item.name || `Step ${index + 1}`,
+    desc: item.detail || item.description || item.why || "Suggested ET onboarding move.",
+    meta: item.timeline || item.stage || `Step ${index + 1}`,
+  }));
+}
+
+function touchpointItemsFromData(conciergeData) {
+  const items = extractArray(conciergeData?.ecosystem?.prioritized_touchpoints);
+  return items.map((item, index) => ({
+    title: item.name || `Touchpoint ${index + 1}`,
+    desc: item.why_for_this_user || item.cta || item.summary || "Relevant ET touchpoint for this profile.",
+    meta: item.pillar || item.priority || "ecosystem",
+  }));
+}
+
+function alertItemsFromData(conciergeData, activeChannels) {
+  const dispatchItems = actionItemsFromData(conciergeData).slice(0, 3).map((item) => ({
+    icon: "Action",
+    title: item.title,
+    body: item.desc,
+    tag: `Live on ${item.meta}`,
+    live: true,
+  }));
+
+  const crossSell = extractArray(conciergeData?.cross_sell?.opportunities).slice(0, 3).map((item, index) => ({
+    icon: "Alert",
+    title: item.name || item.title || `Opportunity ${index + 1}`,
+    body: item.why_now || item.summary || item.reason || "Suggested because of your current ET profile and timing.",
+    tag: item.trigger || "Suggested",
+    live: false,
+  }));
+
+  const channelList = Object.entries(activeChannels)
+    .filter(([key, enabled]) => key !== "chat" && enabled)
+    .map(([key]) => key.toUpperCase());
+
+  if (!dispatchItems.length && !crossSell.length) {
+    return [{
+      icon: "Bell",
+      title: "No alerts generated yet",
+      body: `Finish profiling and trigger recommendations to generate alerts. Active channels: ${channelList.join(", ") || "IN-APP only"}.`,
+      tag: "Waiting",
+      live: false,
+    }];
+  }
+
+  return [...dispatchItems, ...crossSell];
+}
+
+function riskSummaryFromData(profile, conciergeData) {
+  const persona = conciergeData?.core?.persona || {};
+  const rawScore = Number(persona.risk_score);
+  const score = Number.isFinite(rawScore)
+    ? Math.max(0, Math.min(100, rawScore * 10))
+    : ({ "🟢 Conservative": 25, "🟡 Moderate": 55, "🔴 Aggressive": 85, "🤷 Not Sure Yet": 40 }[profile.risk] || 0);
+  const label = score > 70 ? "Aggressive" : score > 40 ? "Moderate" : score > 0 ? "Conservative" : "Not set";
+  return { score, label };
+}
+
+function riskReductionStepsFromData(conciergeData) {
+  const gaps = extractArray(conciergeData?.financial_life?.portfolio_gaps);
+  const needs = extractArray(conciergeData?.financial_life?.immediate_needs);
+  const products = extractArray(conciergeData?.core?.recommendations?.recommended_products);
+  const steps = [];
+
+  gaps.slice(0, 2).forEach((item) => {
+    steps.push({
+      title: "Close a portfolio gap",
+      desc: item,
+    });
+  });
+  needs.slice(0, 2).forEach((item) => {
+    steps.push({
+      title: "Address an immediate need",
+      desc: item,
+    });
+  });
+  products.slice(0, 1).forEach((item) => {
+    steps.push({
+      title: "Use an ET tool to reduce uncertainty",
+      desc: item.why_it_fits || item.summary || item.name || "Explore the top matched ET recommendation.",
+    });
+  });
+
+  return steps.slice(0, 4);
+}
+
+function FlashProfileDeck({ node, step, total, value, onValueChange, onOption, onSubmit, disabled }) {
+  if (!node) return null;
+
+  return (
+    <div className="deck-overlay">
+      <div className="deck-card">
+        <div className="deck-step">Required profile · {step}/{total}</div>
+        <div className="deck-head">
+          <div>
+            <div className="deck-kicker">{PROFILE_DECK[step - 1]?.hint || "Profile setup"}</div>
+            <div className="deck-title">{PROFILE_DECK[step - 1]?.title || "Tell us about yourself"}</div>
+            <div className="deck-copy">
+              {node.bot.replace(/\*\*/g, "")} Finish this card to unlock chat, recommendations, navigator insights, and alerts.
+            </div>
+          </div>
+          <div className="deck-orb">{PROFILE_DECK[step - 1]?.icon || "ET"}</div>
+        </div>
+        <div className="deck-track">
+          <div className="deck-fill" style={{ width: `${(step / total) * 100}%` }} />
+        </div>
+        <div className="deck-options">
+          {(node.qr || []).map((option) => (
+            <button
+              key={option}
+              type="button"
+              className="deck-option"
+              onClick={() => onOption(option)}
+              disabled={disabled}
+            >
+              {option}
+            </button>
+          ))}
+        </div>
+        <div className="deck-freeform">
+          <input
+            className="deck-input"
+            value={value}
+            onChange={(event) => onValueChange(event.target.value)}
+            onKeyDown={(event) => { if (event.key === "Enter") { event.preventDefault(); onSubmit(); } }}
+            placeholder="Or type your own answer"
+            disabled={disabled}
+          />
+          <button type="button" className="deck-submit" onClick={onSubmit} disabled={disabled || !String(value || "").trim()}>
+            Continue
+          </button>
+        </div>
+        <div className="deck-note">
+          This step is mandatory so the concierge can personalize the ET ecosystem instead of showing the same generic experience to everyone.
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ExpandableItems({ items, expandedKey, onToggle, onAskConcierge }) {
+  return (
+    <div className="ws-list">
+      {items.map((item, index) => {
+        const key = `${item.title}-${index}`;
+        const expanded = expandedKey === key;
+        return (
+          <div
+            key={key}
+            className="ws-list-item expandable"
+            onClick={() => onToggle(expanded ? null : key)}
+          >
+            <div className="ws-item-head">
+              <div>
+                <div className="ws-list-title">{item.title}</div>
+                {item.meta && <div className="ws-list-meta">{item.meta}</div>}
+              </div>
+              <div className="ws-expand">{expanded ? "−" : "+"}</div>
+            </div>
+            <div className="ws-list-desc">{item.desc}</div>
+            {expanded && (
+              <div className="ws-item-detail">
+                <div>{item.detail || item.desc}</div>
+                <div className="ws-actions">
+                  <button
+                    type="button"
+                    className="ws-btn"
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      onAskConcierge(item);
+                    }}
+                  >
+                    Ask concierge
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
 function AgentBadge({ agent }) {
   const map = {
     profiler: { cls: "ab-profiler", label: "Profiler Agent", dot: "◆" },
@@ -855,10 +1442,17 @@ function RecCards({ items, onAction }) {
 }
 
 // ─── FIN WIDGET ───────────────────────────────────────────────────────────────
-function FinWidget({ profile }) {
+function FinWidget({ profile, data }) {
   const riskMap = { "🟢 Conservative": 32, "🟡 Moderate": 58, "🔴 Aggressive": 82, "🤷 Not Sure Yet": 44 };
-  const div = riskMap[profile.risk] || 55;
-  const health = Math.round((div + 62 + 34) / 3);
+  const div = data?.diversification || riskMap[profile.risk] || 55;
+  const health = data?.health || Math.round((div + 62 + 34) / 3);
+  const goalProgress = data?.goalProgress || 34;
+  const goalLabel = data?.goalLabel || profile.goal?.replace(/[^\w\s]/g, "") || "wealth";
+  const suggestions = data?.suggestions || [
+    ["âš¡", "Action", "Your portfolio lacks international exposure. Consider adding a US Index ETF."],
+    ["ðŸ›¡ï¸", "Gap", "No term insurance detected. â‚¹1 Cr cover available at under â‚¹900/month."],
+    ["ðŸŽ¯", "Goal", `At current pace, you're 34% toward your ${goalLabel} goal.`],
+  ];
   return (
     <div className="fin-widget">
       <div className="fw-hdr">
@@ -870,14 +1464,10 @@ function FinWidget({ profile }) {
         <div className="fin-meters">
           <RingMeter value={health} color="var(--gold)" label="Health Score" />
           <RingMeter value={div} color="var(--cyan)" label="Diversification" />
-          <RingMeter value={34} color="var(--green)" label="Goal Progress" />
+          <RingMeter value={goalProgress} color="var(--green)" label="Goal Progress" />
         </div>
         <div className="fin-suggestions">
-          {[
-            ["⚡", "Action", "Your portfolio lacks international exposure. Consider adding a US Index ETF."],
-            ["🛡️", "Gap", "No term insurance detected. ₹1 Cr cover available at under ₹900/month."],
-            ["🎯", "Goal", `At current pace, you're 34% toward your ${profile.goal?.replace(/[^\w\s]/g,"") || "wealth"} goal.`],
-          ].map(([icon, label, text]) => (
+          {suggestions.map(([icon, label, text]) => (
             <div className="fin-sug-row" key={label}>
               <span className="fsr-icon">{icon}</span>
               <div className="fsr-text"><strong>{label}:</strong> {text}</div>
@@ -962,6 +1552,7 @@ function NudgeBar({ nudge, onAction }) {
 
 // ─── MAIN APP ─────────────────────────────────────────────────────────────────
 export default function ETConcierge() {
+  const [backendStatus, setBackendStatus] = useState("checking");
   const [messages, setMessages] = useState([]);
   const [inputVal, setInputVal] = useState("");
   const [currentNode, setCurrentNode] = useState("greeting");
@@ -975,16 +1566,20 @@ export default function ETConcierge() {
   const [toast, setToast] = useState({ show: false, icon: "", msg: "" });
   const [activeNav, setActiveNav] = useState("chat");
   const [activeAgent, setActiveAgent] = useState("concierge");
+  const [deckInput, setDeckInput] = useState("");
+  const [expandedWorkspaceItem, setExpandedWorkspaceItem] = useState(null);
 
   const [visitedNodes, setVisitedNodes] = useState(new Set());
   const [activeNudge, setActiveNudge] = useState(null);
   const [nudgeShownFor, setNudgeShownFor] = useState(new Set());
   const [feedbacks, setFeedbacks] = useState([]);
-  const [behaviorLog, setBehaviorLog] = useState([]);
-  const [reasoningTraces, setReasoningTraces] = useState([]);
+  const [, setBehaviorLog] = useState([]);
+  const [, setReasoningTraces] = useState([]);
+  const [conciergeData, setConciergeData] = useState(null);
 
   const msgsRef = useRef(null);
-  const profileKeys = ["interests", "goal", "investments", "risk", "engagement"];
+  const backendStatusRef = useRef("checking");
+  const profileKeys = useMemo(() => ["interests", "goal", "investments", "risk", "engagement"], []);
 
   const scrollBottom = useCallback(() => {
     setTimeout(() => { if (msgsRef.current) msgsRef.current.scrollTop = msgsRef.current.scrollHeight; }, 60);
@@ -1006,7 +1601,145 @@ export default function ETConcierge() {
     return id;
   }, [scrollBottom]);
 
+  const resetSessionState = useCallback(() => {
+    setProfile({});
+    setProfilePct(0);
+    setCurrentNode("greeting");
+    setVisitedNodes(new Set());
+    setActiveNudge(null);
+    setNudgeShownFor(new Set());
+    setBehaviorLog([]);
+    setReasoningTraces([]);
+    setConciergeData(null);
+    setThinking(false);
+    setInputVal("");
+    setActiveAgent("concierge");
+    setActiveNav("chat");
+    setDeckInput("");
+    setExpandedWorkspaceItem(null);
+  }, []);
+
+  const showBackendOffline = useCallback(() => {
+    resetSessionState();
+    setStageLabel("Backend Offline");
+    setStagePill("Try Later");
+    setMessages([{
+      id: Date.now() + Math.random(),
+      role: "bot",
+      content: "Backend offline. Try again later.",
+      type: "text",
+      extra: null,
+      time: nowTime(),
+      agent: "concierge",
+      showFeedback: false,
+    }]);
+  }, [resetSessionState]);
+
+  const startOnlineSession = useCallback(() => {
+    resetSessionState();
+    setCurrentNode("q1");
+    setStageLabel("Profiler Agent · Step 1 of 5");
+    setStagePill("01/05");
+    setActiveAgent("profiler");
+    setMessages([
+      {
+        id: Date.now() + Math.random(),
+        role: "bot",
+        content: "Backend online. Complete your profile to unlock the workspace.",
+        type: "text",
+        extra: null,
+        time: nowTime(),
+        agent: "concierge",
+        showFeedback: false,
+      },
+    ]);
+  }, [resetSessionState]);
+
+  const fetchConciergeData = useCallback(async (nextProfile) => {
+    const conversation = mapProfileToConversation(nextProfile);
+    try {
+      const response = await fetch(`${API_BASE}/api/plan`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          conversation,
+          rag_query: `What ET guidance best supports ${nextProfile.goal || "this user's financial goal"}?`,
+        }),
+      });
+
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      const payload = await response.json();
+      setConciergeData(normalizeResponse(payload));
+      showToast("âœ…", "Live model pipeline connected");
+      logBehavior("pipeline_live", {});
+    } catch (error) {
+      setConciergeData(null);
+      logBehavior("pipeline_fallback", {});
+    }
+  }, [logBehavior, showToast]);
+
+  const fetchChatReply = useCallback(async (userMessage) => {
+    const transcript = messages
+      .slice(-12)
+      .map((item) => `${item.role === "user" ? "User" : "Assistant"}: ${item.content}`)
+      .concat([`User: ${userMessage}`])
+      .join("\n");
+
+    const response = await fetch(`${API_BASE}/api/message`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        transcript,
+        message: userMessage,
+      }),
+    });
+
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    const payload = await response.json();
+    return normalizeResponse(payload);
+  }, [messages]);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const checkBackend = async () => {
+      try {
+        const response = await fetch(`${API_BASE}/api/status`, { cache: "no-store" });
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        if (cancelled) return;
+        setBackendStatus("online");
+      } catch (error) {
+        if (cancelled) return;
+        setBackendStatus("offline");
+      }
+    };
+
+    checkBackend();
+    const intervalId = setInterval(checkBackend, 4000);
+
+    return () => {
+      cancelled = true;
+      clearInterval(intervalId);
+    };
+  }, []);
+
+  useEffect(() => {
+    const previous = backendStatusRef.current;
+    if (backendStatus === previous) return;
+    backendStatusRef.current = backendStatus;
+
+    if (backendStatus === "offline") {
+      showBackendOffline();
+      return;
+    }
+
+    if (backendStatus === "online") {
+      startOnlineSession();
+    }
+  }, [backendStatus, showBackendOffline, startOnlineSession]);
+
   const gotoNode = useCallback((nodeId, newProfile = null) => {
+    if (backendStatus !== "online") return;
     const node = FLOWMAP[nodeId];
     if (!node) return;
     setCurrentNode(nodeId);
@@ -1020,6 +1753,10 @@ export default function ETConcierge() {
     // Queue reasoning trace
     if (node.reasoning) {
       setReasoningTraces(prev => [...prev, { ...node.reasoning, nodeId, time: nowTime() }]);
+    }
+
+    if (nodeId === "profile_done") {
+      fetchConciergeData(newProfile || profile);
     }
 
     // Cross-sell nudge
@@ -1039,16 +1776,10 @@ export default function ETConcierge() {
       addMessage("bot", node.bot, node.type || "text", prof, { showFeedback: showFb, agent: node.agent });
       scrollBottom();
     }, 850 + Math.random() * 450);
-  }, [profile, addMessage, scrollBottom, logBehavior, nudgeShownFor]);
-
-  useEffect(() => {
-    setTimeout(() => {
-      addMessage("bot", FLOWMAP["greeting"].bot, "text", null, { agent: "concierge" });
-    }, 500);
-  }, []);
+  }, [profile, addMessage, scrollBottom, logBehavior, nudgeShownFor, fetchConciergeData, backendStatus]);
 
   const handleQuickReply = useCallback((reply) => {
-    if (thinking) return;
+    if (thinking || backendStatus !== "online" || profilePct < 100) return;
     addMessage("user", reply);
     logBehavior("quick_reply", { reply });
     setActiveNudge(null);
@@ -1068,30 +1799,67 @@ export default function ETConcierge() {
     if (typeof node.next === "string") nextId = node.next;
     else if (typeof node.next === "object") nextId = node.next[reply] || Object.values(node.next)[0];
     if (nextId) gotoNode(nextId, newProfile);
-  }, [thinking, currentNode, profile, profileKeys, addMessage, gotoNode, logBehavior]);
+  }, [thinking, currentNode, profile, profileKeys, addMessage, gotoNode, logBehavior, backendStatus, profilePct]);
 
-  const handleSend = useCallback(() => {
+  const handleSend = useCallback(async () => {
     const val = inputVal.trim();
-    if (!val || thinking) return;
+    if (!val || thinking || backendStatus !== "online" || profilePct < 100) return;
     setInputVal("");
     addMessage("user", val);
     logBehavior("freetext", { len: val.length });
     setActiveNudge(null);
 
     const node = FLOWMAP[currentNode];
-    let nextId;
-    if (node && typeof node.next === "string") nextId = node.next;
-    else if (node && typeof node.next === "object") nextId = Object.values(node.next)[0];
+    const isQuestion = looksLikeQuestion(val);
 
-    if (nextId) gotoNode(nextId);
-    else {
-      setThinking(true);
-      setTimeout(() => {
-        setThinking(false);
-        addMessage("bot", "I've processed your input. Would you like to explore your recommendations or run a financial analysis?", "text", null, { showFeedback: true, agent: "concierge" });
-      }, 900);
+    if (node?.profileKey && !isQuestion) {
+      const newProfile = { ...profile, [node.profileKey]: val.replace(/^[^\w\s]+\s*/, "") };
+      setProfile(newProfile);
+      const filled = profileKeys.filter(k => newProfile[k]).length;
+      setProfilePct(Math.round((filled / profileKeys.length) * 100));
+
+      let nextId;
+      if (typeof node.next === "string") nextId = node.next;
+      else if (typeof node.next === "object") nextId = Object.values(node.next)[0];
+      if (nextId) gotoNode(nextId, newProfile);
+      return;
     }
-  }, [inputVal, thinking, currentNode, addMessage, gotoNode, logBehavior]);
+
+    setThinking(true);
+    setActiveAgent("rag");
+    try {
+      const result = await fetchChatReply(val);
+      if (result?.artifact) {
+        setConciergeData(result.artifact);
+      }
+      addMessage(
+        "bot",
+        result?.message || "I couldn't generate a useful answer just now. Please try again.",
+        "text",
+        null,
+        { showFeedback: true, agent: "rag" },
+      );
+      if (node?.profileKey) {
+        addMessage(
+          "bot",
+          `We can keep going whenever you're ready. ${node.bot.replace(/\*\*/g, "")}`,
+          "text",
+          null,
+          { agent: node.agent || "concierge" },
+        );
+      }
+    } catch (error) {
+      addMessage(
+        "bot",
+        "I couldn't reach the backend for a chat response just now. Please try again in a moment.",
+        "text",
+        null,
+        { agent: "concierge" },
+      );
+    } finally {
+      setThinking(false);
+    }
+  }, [inputVal, thinking, backendStatus, profilePct, addMessage, logBehavior, currentNode, profile, profileKeys, gotoNode, fetchChatReply]);
 
   const handleKey = (e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); handleSend(); } };
 
@@ -1107,12 +1875,11 @@ export default function ETConcierge() {
   }, [logBehavior, showToast, addMessage]);
 
   const restartChat = () => {
-    setMessages([]); setProfile({}); setProfilePct(0);
-    setCurrentNode("greeting"); setStageLabel("Welcome"); setStagePill("Start");
-    setVisitedNodes(new Set()); setNudgeShownFor(new Set());
-    setActiveNudge(null); setBehaviorLog([]); setReasoningTraces([]);
-    setActiveAgent("concierge");
-    setTimeout(() => addMessage("bot", FLOWMAP["greeting"].bot, "text", null, { agent: "concierge" }), 300);
+    if (backendStatus !== "online") {
+      showBackendOffline();
+      return;
+    }
+    startOnlineSession();
   };
 
   const toggleChannel = (key) => {
@@ -1124,28 +1891,103 @@ export default function ETConcierge() {
     });
   };
 
-  const avgRating = feedbacks.length ? (feedbacks.reduce((s, f) => s + (f.rating || 0), 0) / feedbacks.length).toFixed(1) : null;
-  const allTags = feedbacks.flatMap(f => f.tags || []);
-  const tagFreq = allTags.reduce((a, t) => { a[t] = (a[t] || 0) + 1; return a; }, {});
-  const topTags = Object.entries(tagFreq).sort((a, b) => b[1] - a[1]).slice(0, 4).map(([t]) => t);
+  const liveProfile = useMemo(() => mapProfileCard(profile, conciergeData), [profile, conciergeData]);
+  const liveRecommendations = useMemo(() => recommendationItemsFromData(conciergeData, RECS), [conciergeData]);
+  const livePartnerRecommendations = useMemo(() => partnerItemsFromData(conciergeData, PARTNER_RECS), [conciergeData]);
+  const liveMasterclassRecommendations = useMemo(() => masterclassItemsFromData(conciergeData, MASTERCLASS_RECS), [conciergeData]);
+  const liveFinancialData = useMemo(() => financialWidgetData(profile, conciergeData), [profile, conciergeData]);
+  const recommendedActions = useMemo(() => actionItemsFromData(conciergeData), [conciergeData]);
+  const onboardingItems = useMemo(() => onboardingItemsFromData(conciergeData), [conciergeData]);
+  const touchpointItems = useMemo(() => touchpointItemsFromData(conciergeData), [conciergeData]);
+  const alertItems = useMemo(() => alertItemsFromData(conciergeData, activeChannels), [conciergeData, activeChannels]);
+  const riskSummary = useMemo(() => riskSummaryFromData(profile, conciergeData), [profile, conciergeData]);
+  const riskReductionSteps = useMemo(() => riskReductionStepsFromData(conciergeData), [conciergeData]);
 
-  const riskScore = { "🟢 Conservative": 25, "🟡 Moderate": 55, "🔴 Aggressive": 85, "🤷 Not Sure Yet": 40 }[profile.risk] || 0;
+  const riskScore = riskSummary.score;
   const riskColor = riskScore > 65 ? "var(--red)" : riskScore > 40 ? "var(--gold)" : "var(--green)";
-  const riskLabel = riskScore > 65 ? "Aggressive" : riskScore > 40 ? "Moderate" : riskScore > 0 ? "Conservative" : "—";
-
-  const channelEng = [
-    { label: "In-App", pct: 100 },
-    { label: "Email", pct: activeChannels.email ? 82 : 0 },
-    { label: "Push", pct: activeChannels.push ? 67 : 0 },
-    { label: "WhatsApp", pct: activeChannels.wa ? 44 : 0 },
-    { label: "SMS", pct: activeChannels.sms ? 30 : 0 },
-  ];
+  const riskLabel = riskSummary.label;
 
   const pipelineSteps = ["Profiler", "Recommender", "RAG", "Action"];
   const agentPipelineMap = { profiler: 0, recommender: 1, rag: 2, action: 3 };
   const activeStep = agentPipelineMap[activeAgent] ?? -1;
 
-  const currentQRs = FLOWMAP[currentNode]?.qr || [];
+  const profileFlowIds = PROFILE_DECK.map((item) => item.nodeId);
+  const currentProfileStep = profileKeys.findIndex((key) => !profile[key]);
+  const profileComplete = currentProfileStep === -1;
+  const profileLocked = backendStatus === "online" && !profileComplete;
+  const activeProfileNode = profileLocked ? FLOWMAP[profileFlowIds[currentProfileStep]] : null;
+  const activeProfileStepNumber = profileLocked ? currentProfileStep + 1 : profileKeys.length;
+  const currentQRs = !profileLocked ? (FLOWMAP[currentNode]?.qr || []) : [];
+
+  const routeToChat = useCallback((prompt, toastMessage = "Opened in chat") => {
+    setActiveNav("chat");
+    setInputVal(prompt);
+    showToast("💬", toastMessage);
+  }, [showToast]);
+
+  const completeProfileStep = useCallback((rawValue) => {
+    if (!activeProfileNode || backendStatus !== "online") return;
+
+    const answer = String(rawValue || "").trim();
+    if (!answer) return;
+
+    const newProfile = { ...profile, [activeProfileNode.profileKey]: answer.replace(/^[^\w\s]+\s*/, "") };
+    const filled = profileKeys.filter((key) => newProfile[key]).length;
+
+    setProfile(newProfile);
+    setProfilePct(Math.round((filled / profileKeys.length) * 100));
+    setVisitedNodes((prev) => new Set([...prev, activeProfileNode.id]));
+    setActiveAgent(activeProfileNode.agent || "profiler");
+    if (activeProfileNode.reasoning) {
+      setReasoningTraces((prev) => [...prev, { ...activeProfileNode.reasoning, nodeId: activeProfileNode.id, time: nowTime() }]);
+    }
+
+    setMessages((prev) => ([
+      ...prev,
+      {
+        id: Date.now() + Math.random(),
+        role: "bot",
+        content: activeProfileNode.bot,
+        type: "text",
+        extra: null,
+        time: nowTime(),
+        agent: activeProfileNode.agent || "profiler",
+        showFeedback: false,
+      },
+      {
+        id: Date.now() + Math.random(),
+        role: "user",
+        content: answer,
+        type: "text",
+        extra: null,
+        time: nowTime(),
+        agent: "user",
+        showFeedback: false,
+      },
+    ]));
+
+    logBehavior("profile_card_completed", { step: activeProfileNode.id, answer });
+    setDeckInput("");
+    scrollBottom();
+
+    const nextId = typeof activeProfileNode.next === "string"
+      ? activeProfileNode.next
+      : Object.values(activeProfileNode.next || {})[0];
+
+    if (nextId === "profile_done") {
+      setCurrentNode("profile_done");
+      setStageLabel("Profile Complete");
+      setStagePill("Done");
+      setVisitedNodes((prev) => new Set([...prev, "profile_done"]));
+      addMessage("bot", FLOWMAP.profile_done.bot, "profile_card", newProfile, { agent: "profiler" });
+      fetchConciergeData(newProfile);
+      return;
+    }
+
+    setCurrentNode(nextId);
+    if (FLOWMAP[nextId]?.stageLabel) setStageLabel(FLOWMAP[nextId].stageLabel);
+    if (FLOWMAP[nextId]?.stagePill) setStagePill(FLOWMAP[nextId].stagePill);
+  }, [activeProfileNode, addMessage, backendStatus, fetchConciergeData, logBehavior, profile, profileKeys, scrollBottom]);
 
   return (
     <>
@@ -1215,7 +2057,7 @@ export default function ETConcierge() {
               { id: "notifs", icon: "🔔", label: "Alerts & Actions" },
             ].map(n => (
               <button key={n.id} className={`nav-btn ${activeNav === n.id ? "active" : ""}`}
-                onClick={() => { setActiveNav(n.id); if (n.id !== "chat") showToast("🔄", `Switching to ${n.label}…`); }}>
+                onClick={() => { setActiveNav(n.id); setExpandedWorkspaceItem(null); if (n.id !== "chat") showToast("🔄", `Switching to ${n.label}…`); }}>
                 <span className="ni">{n.icon}</span> {n.label}
                 {n.id === "notifs" && feedbacks.length > 0 && <span className="nav-badge">{feedbacks.length}</span>}
               </button>
@@ -1254,7 +2096,15 @@ export default function ETConcierge() {
             </div>
             <div className="hdr-info">
               <div className="hdr-name">ET AI Concierge</div>
-              <div className="hdr-sub">{thinking ? `${activeAgent.toUpperCase()} AGENT · Processing…` : "Online · Multi-Agent Pipeline Active"}</div>
+              <div className="hdr-sub">
+                {backendStatus === "online"
+                  ? (profileLocked
+                    ? `Backend Online · Complete profile card ${activeProfileStepNumber}/5`
+                    : thinking ? `${activeAgent.toUpperCase()} AGENT · Processing…` : "Backend Online · Happy chatting")
+                  : backendStatus === "checking"
+                    ? "Checking backend status…"
+                    : "Backend Offline · Try again later"}
+              </div>
             </div>
 
             {/* Pipeline indicator */}
@@ -1272,7 +2122,9 @@ export default function ETConcierge() {
               <button className="hdr-btn" title="Restart" onClick={restartChat}>↺</button>
             </div>
           </div>
-
+          <div className={`workspace-shell ${profileLocked ? "locked" : ""}`}>
+            {activeNav === "chat" && (
+              <>
           <div className="msgs" ref={msgsRef}>
             {messages.map(m => (
               <div key={m.id}>
@@ -1282,15 +2134,15 @@ export default function ETConcierge() {
                     {m.role === "bot" && <AgentBadge agent={m.agent || "concierge"} />}
 
                     {m.type === "profile_card" && m.extra ? (
-                      <><div className="bubble bot"><BubbleText text={m.content} /></div><ProfileCard profile={m.extra} /></>
+                      <><div className="bubble bot"><BubbleText text={m.content} /></div><ProfileCard profile={liveProfile} /></>
                     ) : m.type === "recommendations" ? (
-                      <><div className="bubble bot"><BubbleText text={m.content} /></div><RecCards items={RECS} onAction={a => { showToast("🔗", a); logBehavior("rec_click", { a }); }} /></>
+                      <><div className="bubble bot"><BubbleText text={m.content} /></div><RecCards items={liveRecommendations} onAction={a => { showToast("🔗", a); logBehavior("rec_click", { a }); }} /></>
                     ) : m.type === "fin_widget" ? (
-                      <><div className="bubble bot"><BubbleText text={m.content} /></div><FinWidget profile={profile} /></>
+                      <><div className="bubble bot"><BubbleText text={m.content} /></div><FinWidget profile={profile} data={liveFinancialData} /></>
                     ) : m.type === "partner_recs" ? (
-                      <><div className="bubble bot"><BubbleText text={m.content} /></div><RecCards items={PARTNER_RECS} onAction={a => { showToast("🔗", a); logBehavior("partner_click", { a }); }} /></>
+                      <><div className="bubble bot"><BubbleText text={m.content} /></div><RecCards items={livePartnerRecommendations} onAction={a => { showToast("🔗", a); logBehavior("partner_click", { a }); }} /></>
                     ) : m.type === "masterclass_recs" ? (
-                      <><div className="bubble bot"><BubbleText text={m.content} /></div><RecCards items={MASTERCLASS_RECS} onAction={a => { showToast("🎓", a); logBehavior("masterclass_click", { a }); }} /></>
+                      <><div className="bubble bot"><BubbleText text={m.content} /></div><RecCards items={liveMasterclassRecommendations} onAction={a => { showToast("🎓", a); logBehavior("masterclass_click", { a }); }} /></>
                     ) : (
                       <div className={`bubble ${m.role === "bot" ? "bot" : "user"}`}><BubbleText text={m.content} /></div>
                     )}
@@ -1329,7 +2181,7 @@ export default function ETConcierge() {
               </div>
             )}
 
-            {!thinking && currentQRs.length > 0 && (
+            {!thinking && backendStatus === "online" && currentQRs.length > 0 && (
               <div style={{ paddingLeft: 38 }}>
                 <div className="qrs">
                   {currentQRs.map(qr => (
@@ -1348,12 +2200,194 @@ export default function ETConcierge() {
             </div>
             <div className="input-row">
               <textarea className="input-box"
-                placeholder="Type a message or tap a suggestion above…"
+                placeholder={backendStatus === "online" && !profileLocked ? "Type a message or tap a suggestion above…" : backendStatus === "online" ? "Complete your profile to start chatting." : "Backend offline. Try again later."}
                 value={inputVal} onChange={e => setInputVal(e.target.value)}
-                onKeyDown={handleKey} rows={1} />
-              <button className="send-btn" onClick={handleSend}>➤</button>
+                onKeyDown={handleKey} rows={1} disabled={backendStatus !== "online" || profileLocked} />
+              <button className="send-btn" onClick={handleSend} disabled={backendStatus !== "online" || profileLocked}>➤</button>
             </div>
           </div>
+              </>
+            )}
+            {activeNav === "recs" && (
+              <div className="workspace-body">
+                <div className="ws-card hero">
+                  <div className="ws-kicker">Recommendations</div>
+                  <div className="ws-card-title">Your best next ET moves</div>
+                  <div className="ws-card-sub">This workspace is for actionable next steps: products to explore, onboarding moves, and ecosystem touchpoints matched to your profile.</div>
+                  <div className="ws-stat-row">
+                    <div className="ws-stat"><div className="ws-stat-label">Profile fit</div><div className="ws-stat-value">{profilePct}%</div></div>
+                    <div className="ws-stat"><div className="ws-stat-label">Product picks</div><div className="ws-stat-value">{liveRecommendations.length}</div></div>
+                    <div className="ws-stat"><div className="ws-stat-label">Next actions</div><div className="ws-stat-value">{recommendedActions.length || onboardingItems.length || 0}</div></div>
+                  </div>
+                </div>
+                <div className="workspace-grid">
+                  <div className="ws-card">
+                    <div className="ws-kicker">Matched picks</div>
+                    <RecCards items={liveRecommendations} onAction={a => {
+                      logBehavior("rec_click", { a });
+                      routeToChat(`Explain why "${a}" is a good next step for me and what I should do first.`, "Moved to chat with this recommendation");
+                    }} />
+                    <div className="ws-actions">
+                      <button type="button" className="ws-btn secondary" onClick={() => routeToChat("Show me more ET product suggestions based on my profile.", "Opened chat for more suggestions")}>
+                        More suggestions
+                      </button>
+                    </div>
+                  </div>
+                  <div className="ws-card">
+                    <div className="ws-kicker">Recommended next steps</div>
+                    {recommendedActions.length ? (
+                      <ExpandableItems
+                        items={recommendedActions.map((item) => ({
+                          ...item,
+                          detail: `This step is connected to your current profile and ET journey. ${item.desc}`,
+                        }))}
+                        expandedKey={expandedWorkspaceItem}
+                        onToggle={setExpandedWorkspaceItem}
+                        onAskConcierge={(item) => routeToChat(`Help me execute this recommended step: ${item.title}. ${item.desc}`, "Opened chat for this step")}
+                      />
+                    ) : <div className="ws-empty">The backend has not returned action items yet. Ask the agent a few questions in Chat and this panel will fill in.</div>}
+                  </div>
+                  <div className="ws-card">
+                    <div className="ws-kicker">Onboarding path</div>
+                    {onboardingItems.length ? (
+                      <ExpandableItems
+                        items={onboardingItems.map((item) => ({
+                          ...item,
+                          detail: `${item.desc} This is part of your personalized ET onboarding path.`,
+                        }))}
+                        expandedKey={expandedWorkspaceItem}
+                        onToggle={setExpandedWorkspaceItem}
+                        onAskConcierge={(item) => routeToChat(`Walk me through this ET onboarding step: ${item.title}. ${item.desc}`, "Opened chat for onboarding help")}
+                      />
+                    ) : <div className="ws-empty">Onboarding guidance will appear here after the concierge plan is generated.</div>}
+                  </div>
+                  <div className="ws-card">
+                    <div className="ws-kicker">More ET surfaces</div>
+                    {touchpointItems.length ? (
+                      <ExpandableItems
+                        items={touchpointItems.slice(0, 4).map((item) => ({
+                          ...item,
+                          detail: `${item.desc} This connects you to another useful ET ecosystem surface.`,
+                        }))}
+                        expandedKey={expandedWorkspaceItem}
+                        onToggle={setExpandedWorkspaceItem}
+                        onAskConcierge={(item) => routeToChat(`Tell me how ${item.title} fits my profile and whether I should use it next.`, "Opened chat for ecosystem guidance")}
+                      />
+                    ) : <div className="ws-empty">This area is reserved for ET Prime, markets tools, courses, and events surfaced by the pipeline.</div>}
+                  </div>
+                </div>
+              </div>
+            )}
+            {activeNav === "fin" && (
+              <div className="workspace-body">
+                <div className="ws-card hero">
+                  <div className="ws-kicker">Financial navigator</div>
+                  <div className="ws-card-title">A live view of your financial position</div>
+                  <div className="ws-card-sub">This tab focuses on where you stand now: health score, portfolio gaps, immediate needs, and the ET surfaces that can help close those gaps.</div>
+                  <div className="ws-chip-row">
+                    {extractArray(conciergeData?.financial_life?.suggested_et_surfaces).slice(0, 4).map((item) => <div className="ws-chip" key={item}>{item}</div>)}
+                  </div>
+                </div>
+                <div className="ws-card">
+                  <FinWidget profile={profile} data={liveFinancialData} />
+                  <div className="ws-actions">
+                    <button type="button" className="ws-btn secondary" onClick={() => routeToChat("Based on my financial navigator, what should I prioritize this month?", "Opened chat for navigator guidance")}>
+                      Discuss this plan in chat
+                    </button>
+                  </div>
+                </div>
+                <div className="workspace-grid">
+                  <div className="ws-card">
+                    <div className="ws-kicker">Portfolio gaps</div>
+                    {extractArray(conciergeData?.financial_life?.portfolio_gaps).length ? (
+                      <ExpandableItems
+                        items={extractArray(conciergeData?.financial_life?.portfolio_gaps).map((item, index) => ({
+                          title: `Gap ${index + 1}`,
+                          desc: item,
+                          meta: "Navigator",
+                          detail: `This gap was identified from your current profile and concierge analysis. ${item}`,
+                        }))}
+                        expandedKey={expandedWorkspaceItem}
+                        onToggle={setExpandedWorkspaceItem}
+                        onAskConcierge={(item) => routeToChat(`How do I fix this portfolio gap: ${item.desc}`, "Opened chat for portfolio gap guidance")}
+                      />
+                    ) : <div className="ws-empty">No portfolio gaps have been synthesized yet.</div>}
+                  </div>
+                  <div className="ws-card">
+                    <div className="ws-kicker">Immediate needs</div>
+                    {extractArray(conciergeData?.financial_life?.immediate_needs).length ? (
+                      <ExpandableItems
+                        items={extractArray(conciergeData?.financial_life?.immediate_needs).map((item, index) => ({
+                          title: `Priority ${index + 1}`,
+                          desc: item,
+                          meta: "Immediate",
+                          detail: `This is marked as near-term because it affects what ET should recommend next. ${item}`,
+                        }))}
+                        expandedKey={expandedWorkspaceItem}
+                        onToggle={setExpandedWorkspaceItem}
+                        onAskConcierge={(item) => routeToChat(`Help me act on this immediate financial need: ${item.desc}`, "Opened chat for immediate need guidance")}
+                      />
+                    ) : <div className="ws-empty">Once the planner detects near-term needs, they will show up here.</div>}
+                  </div>
+                </div>
+              </div>
+            )}
+            {activeNav === "notifs" && (
+              <div className="workspace-body">
+                <div className="ws-card hero">
+                  <div className="ws-kicker">Alerts and actions</div>
+                  <div className="ws-card-title">Alert history and suggested alerts</div>
+                  <div className="ws-card-sub">No chatbot here by design. This tab is a feed of the alerts the concierge has already generated and the alerts it wants you to turn on next.</div>
+                  <div className="ws-chip-row">
+                    {Object.entries(activeChannels).filter(([key, enabled]) => enabled).map(([key]) => <div className="ws-chip" key={key}>{key === "wa" ? "WhatsApp" : key.toUpperCase()}</div>)}
+                  </div>
+                </div>
+                <div className="alert-grid">
+                  {alertItems.map((item, index) => (
+                    <div className={`alert-card ${item.live ? "live" : ""}`} key={`${item.title}-${index}`}>
+                      <div className="alert-top">
+                        <div className="alert-icon">{item.icon}</div>
+                        <div className="alert-title">{item.title}</div>
+                      </div>
+                      <div className="alert-body">{item.body}</div>
+                      <div className="alert-tag">{item.tag}</div>
+                      <div className="ws-actions">
+                        <button type="button" className="ws-btn secondary" onClick={() => routeToChat(`Explain this alert and tell me whether I should act on it now: ${item.title}. ${item.body}`, "Opened chat for alert guidance")}>
+                          Ask concierge
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <div className="ws-card">
+                  <div className="ws-kicker">Suggested channels</div>
+                  <div className="ws-list">
+                    {Object.entries(activeChannels).filter(([key]) => key !== "chat").map(([key, enabled]) => (
+                      <div className="ws-list-item" key={key}>
+                        <div className="ws-list-title">{key === "wa" ? "WhatsApp" : key.toUpperCase()}</div>
+                        <div className="ws-list-desc">{enabled ? "Currently active for alerts and nudges." : "Recommended to increase delivery coverage for this user profile."}</div>
+                        <div className="ws-actions">
+                          <button className="ws-btn secondary" onClick={() => toggleChannel(key)}>{enabled ? "Pause channel" : "Activate channel"}</button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+          {profileLocked && (
+            <FlashProfileDeck
+              node={activeProfileNode}
+              step={activeProfileStepNumber}
+              total={profileKeys.length}
+              value={deckInput}
+              onValueChange={setDeckInput}
+              onOption={completeProfileStep}
+              onSubmit={() => completeProfileStep(deckInput)}
+              disabled={thinking || backendStatus !== "online"}
+            />
+          )}
         </div>
 
         {/* ══ REASONING / INNER MONOLOGUE PANEL ══ */}
@@ -1365,7 +2399,6 @@ export default function ETConcierge() {
           </div>
           <div className="rp-body">
 
-            {/* Risk Score Visual */}
             <div>
               <div className="rp-sec">Risk Scoring</div>
               <div className="risk-visual">
@@ -1382,88 +2415,39 @@ export default function ETConcierge() {
                 </div>
                 <div className="risk-info">
                   <div className="risk-title">Risk Score: {riskLabel}</div>
-                  <div className="risk-desc">Maps to 0–10 scale. Gates product recommendations and advisory tone.</div>
+                  <div className="risk-desc">Derived from your live concierge profile and used to shape recommendations, alerts, and marketplace fit.</div>
                 </div>
               </div>
             </div>
-
-            {/* Reasoning Traces */}
             <div>
-              <div className="rp-sec">Agent Reasoning Traces</div>
-              {reasoningTraces.length === 0 ? (
-                <div className="trace-card"><div className="tc-text"><em>No reasoning traces yet. Start profiling to see agent thoughts.</em></div></div>
+              <div className="rp-sec">How To Reduce Risk</div>
+              {riskReductionSteps.length === 0 ? (
+                <div className="trace-card"><div className="tc-text"><em>Complete the profile and generate recommendations to see risk-reduction steps.</em></div></div>
               ) : (
-                reasoningTraces.slice().reverse().map((t, i) => (
-                  <div className="trace-card" key={i}>
-                    <div className={`tc-agent ${t.agent}`}>{t.agent?.toUpperCase()} · {t.time}</div>
-                    <div className="tc-text">{t.text}</div>
-                  </div>
-                ))
-              )}
-            </div>
-
-            {/* Feedback Analytics */}
-            <div>
-              <div className="rp-sec">Feedback Analytics</div>
-              {feedbacks.length === 0 ? (
-                <div className="trace-card"><div className="tc-text"><em>Rate interactions using the feedback widgets to see AI refinement data here.</em></div></div>
-              ) : (
-                <div className="fb-analytics-card">
-                  <div style={{ display: "flex", alignItems: "flex-end", gap: 10, marginBottom: 8 }}>
-                    <div className="fb-big">{avgRating}</div>
-                    <div>
-                      <div style={{ fontSize: 10, color: "var(--text3)" }}>avg rating · {feedbacks.length} feedback{feedbacks.length > 1 ? "s" : ""}</div>
-                      <div className="fb-mini-stars">{[1,2,3,4,5].map(s => <span key={s}>{parseFloat(avgRating) >= s ? "⭐" : "☆"}</span>)}</div>
+                <div className="rp-mini-list">
+                  {riskReductionSteps.map((item, index) => (
+                    <div className="rp-mini-item" key={`${item.title}-${index}`}>
+                      <div className="rp-mini-title">{item.title}</div>
+                      <div className="rp-mini-desc">{item.desc}</div>
                     </div>
-                  </div>
-                  {topTags.length > 0 && <div className="fb-tag-chips">{topTags.map(t => <div key={t} className="fb-tag-chip">{t}</div>)}</div>}
+                  ))}
                 </div>
               )}
             </div>
-
-            {/* Channel Engagement */}
             <div>
-              <div className="rp-sec">Channel Engagement</div>
-              {channelEng.map(c => (
-                <div className="ca-row" key={c.label}>
-                  <div className="ca-label">{c.label}</div>
-                  <div className="ca-track"><div className="ca-fill" style={{ width: `${c.pct}%` }} /></div>
-                  <div className="ca-val">{c.pct}%</div>
-                </div>
-              ))}
-            </div>
-
-            {/* Behavior Log */}
-            <div>
-              <div className="rp-sec">Event Log ({behaviorLog.length})</div>
-              {behaviorLog.length === 0 ? (
-                <div className="trace-card"><div className="tc-text"><em>Interact with the chat to see live event tracking.</em></div></div>
+              <div className="rp-sec">Live Alerts</div>
+              {alertItems.length === 0 ? (
+                <div className="trace-card"><div className="tc-text"><em>No live alerts yet. Alerts will appear here once the concierge generates them.</em></div></div>
               ) : (
-                behaviorLog.slice().reverse().slice(0, 8).map((e, i) => (
-                  <div className="evt-row" key={i}>
-                    <div className="evt-time">{e.time}</div>
-                    <div className="evt-label"><strong>{e.event}</strong> {e.meta.nodeId || e.meta.reply || e.meta.label || ""}</div>
-                  </div>
-                ))
-              )}
-            </div>
-
-            {/* Session Stats */}
-            <div>
-              <div className="rp-sec">Session Stats</div>
-              {[
-                ["Messages", messages.length],
-                ["Nodes visited", visitedNodes.size],
-                ["Profile fields", `${profileKeys.filter(k => profile[k]).length}/5`],
-                ["Active channels", Object.values(activeChannels).filter(Boolean).length],
-                ["Nudges shown", nudgeShownFor.size],
-                ["Feedbacks", feedbacks.length],
-              ].map(([label, val]) => (
-                <div className="ca-row" key={label}>
-                  <div className="ca-label">{label}</div>
-                  <div style={{ marginLeft: "auto", fontFamily: "var(--mono)", fontSize: "10px", color: "var(--gold)", fontWeight: 700 }}>{val}</div>
+                <div className="rp-mini-list">
+                  {alertItems.slice(0, 4).map((item, index) => (
+                    <div className="rp-mini-item" key={`${item.title}-${index}`}>
+                      <div className="rp-mini-title">{item.title}</div>
+                      <div className="rp-mini-desc">{item.body}</div>
+                    </div>
+                  ))}
                 </div>
-              ))}
+              )}
             </div>
           </div>
         </div>
@@ -1476,3 +2460,6 @@ export default function ETConcierge() {
     </>
   );
 }
+
+
+
