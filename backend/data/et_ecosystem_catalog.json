@@ -1,0 +1,314 @@
+{
+  "offerings": [
+    {
+      "id": "et_prime",
+      "pillar": "content",
+      "name": "ET Prime",
+      "summary": "Long-form investigative business, economy, and wealth stories with paywalled depth.",
+      "tags": ["research", "depth", "macros", "corporate"],
+      "persona_fit": ["Wealth Builder", "Active Trader", "Beginner Investor"],
+      "risk_alignment": "Medium",
+      "monetization": "subscription"
+    },
+    {
+      "id": "et_markets_app",
+      "pillar": "markets",
+      "name": "ET Markets app",
+      "summary": "Live quotes, portfolios, screeners, IPO calendar, and stock news.",
+      "tags": ["equity", "realtime", "watchlist", "ipo"],
+      "persona_fit": ["Active Trader", "Wealth Builder", "Beginner Investor"],
+      "risk_alignment": "High",
+      "monetization": "freemium"
+    },
+    {
+      "id": "et_wealth",
+      "pillar": "markets",
+      "name": "ET Wealth editions & calculators",
+      "summary": "Goal SIP calculators, asset allocation explainers, and wealth specials.",
+      "tags": ["sip", "planning", "allocation", "goals"],
+      "persona_fit": ["Wealth Builder", "Beginner Investor"],
+      "risk_alignment": "Medium",
+      "monetization": "free"
+    },
+    {
+      "id": "mc_trading_intensive",
+      "pillar": "learning",
+      "name": "Masterclass: Trading & technicals",
+      "summary": "Structured sessions on risk, position sizing, and market structure.",
+      "tags": ["trading", "technical", "risk"],
+      "persona_fit": ["Active Trader"],
+      "risk_alignment": "High",
+      "monetization": "paid_course"
+    },
+    {
+      "id": "mc_personal_finance_101",
+      "pillar": "learning",
+      "name": "Masterclass: Personal finance fundamentals",
+      "summary": "Emergency funds, insurance basics, tax planning introduction.",
+      "tags": ["basics", "insurance", "tax", "beginner"],
+      "persona_fit": ["Beginner Investor", "Loan Seeker"],
+      "risk_alignment": "Low",
+      "monetization": "paid_course"
+    },
+    {
+      "id": "mc_macro_outlook",
+      "pillar": "learning",
+      "name": "Masterclass: Macro & policy",
+      "summary": "RBI, rates, and global macro impact on portfolios.",
+      "tags": ["macro", "rates", "policy"],
+      "persona_fit": ["Wealth Builder", "Active Trader"],
+      "risk_alignment": "Medium",
+      "monetization": "paid_course"
+    },
+    {
+      "id": "evt_wealth_summit",
+      "pillar": "events",
+      "name": "ET Wealth Summit",
+      "summary": "Flagship wealth event: CIOs, fund managers, and planners.",
+      "tags": ["networking", "wealth", "summit"],
+      "persona_fit": ["Wealth Builder", "Beginner Investor"],
+      "risk_alignment": "Medium",
+      "monetization": "ticketed"
+    },
+    {
+      "id": "evt_corporate_breakfast",
+      "pillar": "events",
+      "name": "ET Corporate Roundtables",
+      "summary": "CXO-focused sessions on capital allocation and strategy.",
+      "tags": ["corporate", "cxo", "strategy"],
+      "persona_fit": ["Wealth Builder"],
+      "risk_alignment": "Low",
+      "monetization": "invite"
+    },
+    {
+      "id": "evt_startups_meet",
+      "pillar": "events",
+      "name": "ET Startup Dialogues",
+      "summary": "Founders, fundraising, and ESOP planning themes.",
+      "tags": ["startup", "esop", "founders"],
+      "persona_fit": ["Active Trader", "Wealth Builder"],
+      "risk_alignment": "High",
+      "monetization": "ticketed"
+    },
+    {
+      "id": "prime_credit_insight",
+      "pillar": "content",
+      "name": "Prime: Credit & lending specials",
+      "summary": "Deep dives on credit cycles, lender strategy, and retail borrowing.",
+      "tags": ["credit", "loans", "rates"],
+      "persona_fit": ["Loan Seeker"],
+      "risk_alignment": "Low",
+      "monetization": "subscription"
+    },
+    {
+      "id": "markets_options_chain",
+      "pillar": "markets",
+      "name": "ET Markets: F&O chain & OI",
+      "summary": "Derivatives chain, open interest, and expiry snapshots.",
+      "tags": ["fno", "derivatives", "trading"],
+      "persona_fit": ["Active Trader"],
+      "risk_alignment": "High",
+      "monetization": "freemium"
+    },
+    {
+      "id": "partner_cc_premium",
+      "pillar": "partner_services",
+      "name": "Partner: Premium rewards credit card",
+      "summary": "Travel and dining rewards card via ET partnership channel.",
+      "tags": ["credit_card", "rewards", "travel"],
+      "persona_fit": ["Wealth Builder", "Active Trader"],
+      "risk_alignment": "Medium",
+      "monetization": "partner_commission",
+      "partner_category": "credit_card"
+    },
+    {
+      "id": "partner_cc_cashback",
+      "pillar": "partner_services",
+      "name": "Partner: Cashback everyday card",
+      "summary": "Everyday spend cashback with simplified eligibility checks.",
+      "tags": ["credit_card", "cashback", "starter"],
+      "persona_fit": ["Beginner Investor", "Loan Seeker"],
+      "risk_alignment": "Low",
+      "monetization": "partner_commission",
+      "partner_category": "credit_card"
+    },
+    {
+      "id": "partner_home_loan",
+      "pillar": "partner_services",
+      "name": "Partner: Home loan rate check",
+      "summary": "Compare floating/fixed home loan offers and EMI scenarios.",
+      "tags": ["home_loan", "emi", "mortgage"],
+      "persona_fit": ["Loan Seeker", "Wealth Builder"],
+      "risk_alignment": "Low",
+      "monetization": "partner_lead_fee",
+      "partner_category": "loan"
+    },
+    {
+      "id": "partner_personal_loan",
+      "pillar": "partner_services",
+      "name": "Partner: Pre-approved personal loan",
+      "summary": "Short-tenure personal loan for consolidation or emergencies.",
+      "tags": ["personal_loan", "consolidation"],
+      "persona_fit": ["Loan Seeker", "Beginner Investor"],
+      "risk_alignment": "Low",
+      "monetization": "partner_lead_fee",
+      "partner_category": "loan"
+    },
+    {
+      "id": "partner_term_life",
+      "pillar": "partner_services",
+      "name": "Partner: Term life cover",
+      "summary": "Pure term plan illustration with income-replacement framing.",
+      "tags": ["insurance", "term", "protection"],
+      "persona_fit": ["Beginner Investor", "Wealth Builder", "Loan Seeker"],
+      "risk_alignment": "Low",
+      "monetization": "partner_commission",
+      "partner_category": "insurance"
+    },
+    {
+      "id": "partner_health_topup",
+      "pillar": "partner_services",
+      "name": "Partner: Health top-up policy",
+      "summary": "Supersize employer cover with affordable top-up options.",
+      "tags": ["health_insurance", "topup"],
+      "persona_fit": ["Wealth Builder", "Beginner Investor"],
+      "risk_alignment": "Low",
+      "monetization": "partner_commission",
+      "partner_category": "insurance"
+    },
+    {
+      "id": "partner_wealth_wm",
+      "pillar": "partner_services",
+      "name": "Partner: Wealth management onboarding",
+      "summary": "Discretionary / advisory mandates for affluent investors.",
+      "tags": ["wealth_management", "hnw", "advisory"],
+      "persona_fit": ["Wealth Builder"],
+      "risk_alignment": "Medium",
+      "monetization": "partner_referral",
+      "partner_category": "wealth"
+    },
+    {
+      "id": "partner_wealth_robo",
+      "pillar": "partner_services",
+      "name": "Partner: Goal-based robo advisory",
+      "summary": "Automated goal portfolios with human escalation.",
+      "tags": ["robo", "goals", "sip"],
+      "persona_fit": ["Beginner Investor", "Wealth Builder"],
+      "risk_alignment": "Medium",
+      "monetization": "partner_referral",
+      "partner_category": "wealth"
+    },
+    {
+      "id": "et_podcasts_wealth",
+      "pillar": "content",
+      "name": "ET Podcasts: Mint Your Wealth",
+      "summary": "Audio explainers on markets and personal finance.",
+      "tags": ["audio", "commute", "beginner"],
+      "persona_fit": ["Beginner Investor"],
+      "risk_alignment": "Low",
+      "monetization": "free"
+    },
+    {
+      "id": "et_newsletters",
+      "pillar": "content",
+      "name": "ET editorial newsletters",
+      "summary": "Morning briefs and sector wrap subscriptions.",
+      "tags": ["email", "brief", "macro"],
+      "persona_fit": ["Active Trader", "Wealth Builder"],
+      "risk_alignment": "Medium",
+      "monetization": "free"
+    },
+    {
+      "id": "markets_mutual_fund_tools",
+      "pillar": "markets",
+      "name": "ET Markets: MF screener & compare",
+      "summary": "Filter funds by category, expense ratio, and rolling returns.",
+      "tags": ["mutual_funds", "compare", "sip"],
+      "persona_fit": ["Beginner Investor", "Wealth Builder"],
+      "risk_alignment": "Medium",
+      "monetization": "free"
+    },
+    {
+      "id": "mc_tax_planning_lab",
+      "pillar": "learning",
+      "name": "Masterclass: Tax planning lab",
+      "summary": "80C, 80D, capital gains, and new-regime trade-offs.",
+      "tags": ["tax", "80c", "capital_gains"],
+      "persona_fit": ["Wealth Builder", "Beginner Investor"],
+      "risk_alignment": "Low",
+      "monetization": "paid_course"
+    },
+    {
+      "id": "evt_investor_camp",
+      "pillar": "events",
+      "name": "ET Investor Camp (city series)",
+      "summary": "Retail investor education roadshow with Q&A.",
+      "tags": ["community", "education", "qna"],
+      "persona_fit": ["Beginner Investor"],
+      "risk_alignment": "Low",
+      "monetization": "ticketed"
+    },
+    {
+      "id": "prime_smallcap_series",
+      "pillar": "content",
+      "name": "Prime: Smallcap & midcap chronicles",
+      "summary": "Reporting cycle coverage and governance red flags.",
+      "tags": ["smallcap", "research", "quality"],
+      "persona_fit": ["Active Trader", "Wealth Builder"],
+      "risk_alignment": "High",
+      "monetization": "subscription"
+    },
+    {
+      "id": "markets_commodity_track",
+      "pillar": "markets",
+      "name": "ET Markets: Commodities & FX corner",
+      "summary": "Gold, crude, USDINR context for hedging and allocation ideas.",
+      "tags": ["commodities", "gold", "fx"],
+      "persona_fit": ["Active Trader", "Wealth Builder"],
+      "risk_alignment": "High",
+      "monetization": "free"
+    },
+    {
+      "id": "partner_used_car_loan",
+      "pillar": "partner_services",
+      "name": "Partner: Used vehicle finance",
+      "summary": "Pre-owned car two-wheeler loans with soft eligibility.",
+      "tags": ["auto_loan", "emi"],
+      "persona_fit": ["Loan Seeker"],
+      "risk_alignment": "Low",
+      "monetization": "partner_lead_fee",
+      "partner_category": "loan"
+    },
+    {
+      "id": "partner_life_annuity",
+      "pillar": "partner_services",
+      "name": "Partner: Annuity / pension wrappers",
+      "summary": "Guaranteed income products for near-retirees.",
+      "tags": ["annuity", "retirement", "income"],
+      "persona_fit": ["Wealth Builder", "Beginner Investor"],
+      "risk_alignment": "Low",
+      "monetization": "partner_commission",
+      "partner_category": "insurance"
+    },
+    {
+      "id": "corp_et_edge",
+      "pillar": "events",
+      "name": "ET Edge BFSI",
+      "summary": "Banking and insurance industry conference tracks.",
+      "tags": ["bfsi", "industry", "networking"],
+      "persona_fit": ["Wealth Builder", "Active Trader"],
+      "risk_alignment": "Low",
+      "monetization": "ticketed"
+    },
+    {
+      "id": "welcome_concierge_bot",
+      "pillar": "content",
+      "name": "ET AI Concierge (this product)",
+      "summary": "Unified profiling and routing across ET ecosystem.",
+      "tags": ["onboarding", "ai", "routing"],
+      "persona_fit": ["Beginner Investor", "Active Trader", "Wealth Builder", "Loan Seeker"],
+      "risk_alignment": "Medium",
+      "monetization": "free"
+    }
+  ]
+}
