@@ -6,7 +6,49 @@ const API_BASE = process.env.REACT_APP_API_BASE || "http://127.0.0.1:8000";
 const css = `
   @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;0,900;1,600&family=Syne:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
 
+  /* ══ NEW THEME — dark + coral/orange accents (DEFAULT) ══ */
   :root {
+    --bg: #141414;
+    --bg2: #1a1a1a;
+    --bg3: #1f1f1f;
+    --panel: transparent;
+    --surface: #232323;
+    --surface2: #2c2c2c;
+    --border: rgba(255,255,255,0.07);
+    --border2: rgba(255,255,255,0.12);
+
+    --gold: #FF6F61;
+    --gold2: #ff8a7e;
+    --gold-dim: rgba(255,111,97,0.14);
+    --gold-glow: rgba(255,111,97,0.18);
+
+    --cyan: #FF4500;
+    --cyan2: #ff6533;
+    --cyan-dim: rgba(255,69,0,0.12);
+
+    --violet: #DAA520;
+    --violet-dim: rgba(218,165,32,0.13);
+
+    --green: #3dca7e;
+    --green-dim: rgba(61,202,126,0.12);
+    --red: #ff5c5c;
+    --red-dim: rgba(255,92,92,0.12);
+
+    --text: #F5E8D8;
+    --text2: #c4b09a;
+    --text3: #7a6e66;
+
+    --sidebar-w: 260px;
+    --reasoning-w: 310px;
+    --hdr: 58px;
+
+    --mono: 'JetBrains Mono', monospace;
+    --display: 'Playfair Display', serif;
+    --body: 'Syne', sans-serif;
+  }
+
+  /* ══ LEGACY THEME — original gold/cyan dark ══ */
+  .theme-dark {
     --bg: #07080d;
     --bg2: #0d0f1a;
     --bg3: #111420;
@@ -36,14 +78,6 @@ const css = `
     --text: #e8eaf2;
     --text2: #9095b0;
     --text3: #5a5f7a;
-
-    --sidebar-w: 260px;
-    --reasoning-w: 310px;
-    --hdr: 58px;
-
-    --mono: 'JetBrains Mono', monospace;
-    --display: 'Playfair Display', serif;
-    --body: 'Syne', sans-serif;
   }
 
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -55,6 +89,32 @@ const css = `
     color: var(--text);
     -webkit-font-smoothing: antialiased;
   }
+
+  /* Root wrapper inherits theme */
+  .app-root {
+    height: 100%;
+    overflow: hidden;
+    background: var(--bg);
+  }
+
+  /* ══ THEME TOGGLE BUTTON ══ */
+  .theme-toggle-btn {
+    display: flex; align-items: center; gap: 6px;
+    padding: 5px 12px; border-radius: 20px;
+    border: 1px solid var(--border2);
+    background: var(--surface); cursor: pointer;
+    font-family: var(--body); font-size: 11px; font-weight: 700;
+    color: var(--text2); transition: all 0.2s ease;
+    white-space: nowrap; letter-spacing: 0.03em;
+  }
+  .theme-toggle-btn:hover {
+    background: var(--gold-dim);
+    border-color: var(--gold);
+    color: var(--gold);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px var(--gold-glow);
+  }
+  .theme-toggle-btn .theme-icon { font-size: 13px; }
 
   /* ══ SCROLLBARS ══ */
   ::-webkit-scrollbar { width: 2px; height: 2px; }
@@ -296,9 +356,14 @@ const css = `
     color: var(--text);
   }
   .bubble.user {
+    background: linear-gradient(135deg, var(--violet), var(--cyan));
+    border: 1px solid rgba(255,69,0,0.18);
+    border-bottom-right-radius: 4px;
+    color: #fff;
+  }
+  .theme-dark .bubble.user {
     background: linear-gradient(135deg, #0d6e72, #0a5459);
     border: 1px solid rgba(0,212,200,0.2);
-    border-bottom-right-radius: 4px;
     color: #e0fffe;
   }
 
@@ -615,9 +680,13 @@ const css = `
   /* ══ BG TEXTURE ══ */
   .bg-grid {
     position: fixed; inset: 0; pointer-events: none; z-index: 0;
+    background-image: linear-gradient(rgba(28,28,28,0.04) 1px, transparent 1px),
+                      linear-gradient(90deg, rgba(28,28,28,0.04) 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
+  .theme-dark .bg-grid {
     background-image: linear-gradient(rgba(255,255,255,0.012) 1px, transparent 1px),
                       linear-gradient(90deg, rgba(255,255,255,0.012) 1px, transparent 1px);
-    background-size: 40px 40px;
   }
 
   /* workspace */
@@ -1552,6 +1621,7 @@ function NudgeBar({ nudge, onAction }) {
 
 // ─── MAIN APP ─────────────────────────────────────────────────────────────────
 export default function ETConcierge() {
+  const [theme, setTheme] = useState("warm"); // 'warm' = new default, 'dark' = legacy
   const [backendStatus, setBackendStatus] = useState("checking");
   const [messages, setMessages] = useState([]);
   const [inputVal, setInputVal] = useState("");
@@ -1990,7 +2060,7 @@ export default function ETConcierge() {
   }, [activeProfileNode, addMessage, backendStatus, fetchConciergeData, logBehavior, profile, profileKeys, scrollBottom]);
 
   return (
-    <>
+    <div className={`app-root${theme === "dark" ? " theme-dark" : ""}`}>
       <style>{css}</style>
       <div className="bg-grid" />
       <div className="app" style={{ position: "relative", zIndex: 1 }}>
@@ -2118,6 +2188,14 @@ export default function ETConcierge() {
             </div>
 
             <div className="hdr-btns">
+              <button
+                className="theme-toggle-btn"
+                title={theme === "warm" ? "Switch to classic theme" : "Switch to new coral theme"}
+                onClick={() => setTheme(t => t === "warm" ? "dark" : "warm")}
+              >
+                <span className="theme-icon">{theme === "warm" ? "🎨" : "🌊"}</span>
+                {theme === "warm" ? "Classic Theme" : "Coral Theme"}
+              </button>
               <button className="hdr-btn" title="Inner Monologue" onClick={() => setReasoningOpen(o => !o)}>🧠</button>
               <button className="hdr-btn" title="Restart" onClick={restartChat}>↺</button>
             </div>
@@ -2457,7 +2535,7 @@ export default function ETConcierge() {
         <span className="toast-icon">{toast.icon}</span>
         {toast.msg}
       </div>
-    </>
+    </div>
   );
 }
 
