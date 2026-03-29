@@ -377,10 +377,10 @@ const css = `
 
   /* header */
   .chat-hdr {
-    height: var(--hdr); background: rgba(13,15,26,0.95);
+    height: var(--hdr); background: var(--surface);
     border-bottom: 1px solid var(--border);
     display: flex; align-items: center; padding: 0 22px; gap: 12px;
-    flex-shrink: 0; backdrop-filter: blur(12px);
+    flex-shrink: 0;
     position: relative; z-index: 10;
   }
 
@@ -683,8 +683,8 @@ const css = `
 
   /* ══ INPUT AREA ══ */
   .input-area {
-    background: rgba(13,15,26,0.98); border-top: 1px solid var(--border);
-    padding: 14px 22px; flex-shrink: 0; backdrop-filter: blur(12px);
+    background: var(--surface); border-top: 1px solid var(--border);
+    padding: 14px 22px; flex-shrink: 0;
   }
   .stage-strip {
     display: flex; align-items: center; gap: 8px; margin-bottom: 10px;
@@ -1690,21 +1690,21 @@ function FeedbackWidget({ onSubmit }) {
     <div className="fb-widget">
       <div className="fb-header">⭐ Rate this interaction</div>
       <div className="fb-stars">
-        {[1,2,3,4,5].map(s => (
-          <div key={s} className={`fb-star ${(hovered||rating)>=s?"sel":""}`}
+        {[1, 2, 3, 4, 5].map(s => (
+          <div key={s} className={`fb-star ${(hovered || rating) >= s ? "sel" : ""}`}
             onMouseEnter={() => setHov(s)} onMouseLeave={() => setHov(0)}
             onClick={() => setRating(s)}>
-            {(hovered||rating)>=s?"⭐":"☆"}
+            {(hovered || rating) >= s ? "⭐" : "☆"}
           </div>
         ))}
       </div>
       <div className="fb-thumbs">
-        <div className={`fb-thumb ${thumb==="up"?"sel-up":""}`} onClick={() => { setThumb("up"); setTags([]); }}>👍 Helpful</div>
-        <div className={`fb-thumb ${thumb==="down"?"sel-down":""}`} onClick={() => { setThumb("down"); setTags([]); }}>👎 Needs Work</div>
+        <div className={`fb-thumb ${thumb === "up" ? "sel-up" : ""}`} onClick={() => { setThumb("up"); setTags([]); }}>👍 Helpful</div>
+        <div className={`fb-thumb ${thumb === "down" ? "sel-down" : ""}`} onClick={() => { setThumb("down"); setTags([]); }}>👎 Needs Work</div>
       </div>
       {thumb !== null && (
         <div className="fb-tags">
-          {tagList.map(t => <div key={t} className={`fb-tag ${tags.includes(t)?"sel":""}`} onClick={() => toggle(t)}>{t}</div>)}
+          {tagList.map(t => <div key={t} className={`fb-tag ${tags.includes(t) ? "sel" : ""}`} onClick={() => toggle(t)}>{t}</div>)}
         </div>
       )}
       <textarea className="fb-textarea" rows={2} placeholder="Any other comments? (optional)"
@@ -2316,87 +2316,87 @@ export default function ETConcierge() {
           <div className={`workspace-shell ${profileLocked ? "locked" : ""}`}>
             {activeNav === "chat" && (
               <>
-          <div className="msgs" ref={msgsRef}>
-            {messages.map(m => (
-              <div key={m.id}>
-                <div className={`msg-row msg-animate ${m.role === "user" ? "user" : ""}`}>
-                  <div className={`msg-av ${m.role === "bot" ? "bot" : "usr"}`}>{m.role === "bot" ? "ET" : "You"}</div>
-                  <div className="msg-body">
-                    {m.role === "bot" && <AgentBadge agent={m.agent || "concierge"} />}
+                <div className="msgs" ref={msgsRef}>
+                  {messages.map(m => (
+                    <div key={m.id}>
+                      <div className={`msg-row msg-animate ${m.role === "user" ? "user" : ""}`}>
+                        <div className={`msg-av ${m.role === "bot" ? "bot" : "usr"}`}>{m.role === "bot" ? "ET" : "You"}</div>
+                        <div className="msg-body">
+                          {m.role === "bot" && <AgentBadge agent={m.agent || "concierge"} />}
 
-                    {m.type === "profile_card" && m.extra ? (
-                      <><div className="bubble bot"><BubbleText text={m.content} /></div><ProfileCard profile={liveProfile} /></>
-                    ) : m.type === "recommendations" ? (
-                      <><div className="bubble bot"><BubbleText text={m.content} /></div><RecCards items={liveRecommendations} onAction={a => { showToast("🔗", a); logBehavior("rec_click", { a }); }} /></>
-                    ) : m.type === "fin_widget" ? (
-                      <><div className="bubble bot"><BubbleText text={m.content} /></div><FinWidget profile={profile} data={liveFinancialData} /></>
-                    ) : m.type === "partner_recs" ? (
-                      <><div className="bubble bot"><BubbleText text={m.content} /></div><RecCards items={livePartnerRecommendations} onAction={a => { showToast("🔗", a); logBehavior("partner_click", { a }); }} /></>
-                    ) : m.type === "masterclass_recs" ? (
-                      <><div className="bubble bot"><BubbleText text={m.content} /></div><RecCards items={liveMasterclassRecommendations} onAction={a => { showToast("🎓", a); logBehavior("masterclass_click", { a }); }} /></>
-                    ) : (
-                      <div className={`bubble ${m.role === "bot" ? "bot" : "user"}`}><BubbleText text={m.content} /></div>
-                    )}
-                    <div className="msg-ts">{m.time}</div>
-                  </div>
-                </div>
+                          {m.type === "profile_card" && m.extra ? (
+                            <><div className="bubble bot"><BubbleText text={m.content} /></div><ProfileCard profile={liveProfile} /></>
+                          ) : m.type === "recommendations" ? (
+                            <><div className="bubble bot"><BubbleText text={m.content} /></div><RecCards items={liveRecommendations} onAction={a => { showToast("🔗", a); logBehavior("rec_click", { a }); }} /></>
+                          ) : m.type === "fin_widget" ? (
+                            <><div className="bubble bot"><BubbleText text={m.content} /></div><FinWidget profile={profile} data={liveFinancialData} /></>
+                          ) : m.type === "partner_recs" ? (
+                            <><div className="bubble bot"><BubbleText text={m.content} /></div><RecCards items={livePartnerRecommendations} onAction={a => { showToast("🔗", a); logBehavior("partner_click", { a }); }} /></>
+                          ) : m.type === "masterclass_recs" ? (
+                            <><div className="bubble bot"><BubbleText text={m.content} /></div><RecCards items={liveMasterclassRecommendations} onAction={a => { showToast("🎓", a); logBehavior("masterclass_click", { a }); }} /></>
+                          ) : (
+                            <div className={`bubble ${m.role === "bot" ? "bot" : "user"}`}><BubbleText text={m.content} /></div>
+                          )}
+                          <div className="msg-ts">{m.time}</div>
+                        </div>
+                      </div>
 
-                {m.role === "bot" && m.showFeedback && (
-                  <div style={{ paddingLeft: 38, marginTop: 2 }}>
-                    <FeedbackWidget onSubmit={(fb) => handleFeedback(m.id, fb)} />
-                  </div>
-                )}
-              </div>
-            ))}
-
-            {thinking && (
-              <div className="msg-row msg-animate">
-                <div className="msg-av bot">ET</div>
-                <div className="msg-body">
-                  <AgentBadge agent={activeAgent} />
-                  <div className="thinking">
-                    <div className="t-dot" /><div className="t-dot" /><div className="t-dot" />
-                    <span className="t-label">{activeAgent} processing…</span>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {!thinking && activeNudge && (
-              <div style={{ paddingLeft: 38 }}>
-                <NudgeBar nudge={activeNudge} onAction={() => {
-                  showToast(activeNudge.icon, activeNudge.cta);
-                  logBehavior("nudge_click", { trigger: activeNudge.trigger });
-                  setActiveNudge(null);
-                }} />
-              </div>
-            )}
-
-            {!thinking && backendStatus === "online" && currentQRs.length > 0 && (
-              <div style={{ paddingLeft: 38 }}>
-                <div className="qrs">
-                  {currentQRs.map(qr => (
-                    <button key={qr} className="qr" onClick={() => handleQuickReply(qr)}>{qr}</button>
+                      {m.role === "bot" && m.showFeedback && (
+                        <div style={{ paddingLeft: 38, marginTop: 2 }}>
+                          <FeedbackWidget onSubmit={(fb) => handleFeedback(m.id, fb)} />
+                        </div>
+                      )}
+                    </div>
                   ))}
-                </div>
-              </div>
-            )}
-          </div>
 
-          <div className="input-area">
-            <div className="stage-strip">
-              <div className="stage-dot" />
-              <span className="stage-text">{stageLabel}</span>
-              <div className="stage-pill">{stagePill}</div>
-            </div>
-            <div className="input-row">
-              <textarea className="input-box"
-                placeholder={backendStatus === "online" && !profileLocked ? "Type a message or tap a suggestion above…" : backendStatus === "online" ? "Complete your profile to start chatting." : "Backend offline. Try again later."}
-                value={inputVal} onChange={e => setInputVal(e.target.value)}
-                onKeyDown={handleKey} rows={1} disabled={backendStatus !== "online" || profileLocked} />
-              <button className="send-btn" onClick={handleSend} disabled={backendStatus !== "online" || profileLocked}>➤</button>
-            </div>
-          </div>
+                  {thinking && (
+                    <div className="msg-row msg-animate">
+                      <div className="msg-av bot">ET</div>
+                      <div className="msg-body">
+                        <AgentBadge agent={activeAgent} />
+                        <div className="thinking">
+                          <div className="t-dot" /><div className="t-dot" /><div className="t-dot" />
+                          <span className="t-label">{activeAgent} processing…</span>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {!thinking && activeNudge && (
+                    <div style={{ paddingLeft: 38 }}>
+                      <NudgeBar nudge={activeNudge} onAction={() => {
+                        showToast(activeNudge.icon, activeNudge.cta);
+                        logBehavior("nudge_click", { trigger: activeNudge.trigger });
+                        setActiveNudge(null);
+                      }} />
+                    </div>
+                  )}
+
+                  {!thinking && backendStatus === "online" && currentQRs.length > 0 && (
+                    <div style={{ paddingLeft: 38 }}>
+                      <div className="qrs">
+                        {currentQRs.map(qr => (
+                          <button key={qr} className="qr" onClick={() => handleQuickReply(qr)}>{qr}</button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                <div className="input-area">
+                  <div className="stage-strip">
+                    <div className="stage-dot" />
+                    <span className="stage-text">{stageLabel}</span>
+                    <div className="stage-pill">{stagePill}</div>
+                  </div>
+                  <div className="input-row">
+                    <textarea className="input-box"
+                      placeholder={backendStatus === "online" && !profileLocked ? "Type a message or tap a suggestion above…" : backendStatus === "online" ? "Complete your profile to start chatting." : "Backend offline. Try again later."}
+                      value={inputVal} onChange={e => setInputVal(e.target.value)}
+                      onKeyDown={handleKey} rows={1} disabled={backendStatus !== "online" || profileLocked} />
+                    <button className="send-btn" onClick={handleSend} disabled={backendStatus !== "online" || profileLocked}>➤</button>
+                  </div>
+                </div>
               </>
             )}
             {activeNav === "recs" && (
