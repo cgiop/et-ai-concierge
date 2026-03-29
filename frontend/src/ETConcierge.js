@@ -5,38 +5,39 @@ const API_BASE = process.env.REACT_APP_API_BASE || "http://127.0.0.1:8000";
 // ─── STYLES ───────────────────────────────────────────────────────────────────
 const css = `
   @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;0,900;1,600&family=Syne:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
+  @import url('https://cdn-uicons.flaticon.com/4.0.0/uicons-regular-rounded/css/uicons-regular-rounded.css');
 
   /* ══ NEW THEME — dark + coral/orange accents (DEFAULT) ══ */
   :root {
-    --bg: #141414;
-    --bg2: #1a1a1a;
-    --bg3: #1f1f1f;
+    --bg: #efe7da;
+    --bg2: #f7f1e7;
+    --bg3: #fbf6ef;
     --panel: transparent;
-    --surface: #232323;
-    --surface2: #2c2c2c;
-    --border: rgba(255,255,255,0.07);
-    --border2: rgba(255,255,255,0.12);
+    --surface: rgba(255,255,255,0.84);
+    --surface2: rgba(255,255,255,0.94);
+    --border: rgba(15,23,42,0.12);
+    --border2: rgba(15,23,42,0.18);
 
-    --gold: #FF6F61;
-    --gold2: #ff8a7e;
-    --gold-dim: rgba(255,111,97,0.14);
-    --gold-glow: rgba(255,111,97,0.18);
+    --gold: #2d74da;
+    --gold2: #1d5fc4;
+    --gold-dim: rgba(45,116,218,0.12);
+    --gold-glow: rgba(45,116,218,0.16);
 
-    --cyan: #FF4500;
-    --cyan2: #ff6533;
-    --cyan-dim: rgba(255,69,0,0.12);
+    --cyan: #52b9d8;
+    --cyan2: #269dc1;
+    --cyan-dim: rgba(82,185,216,0.14);
 
-    --violet: #DAA520;
-    --violet-dim: rgba(218,165,32,0.13);
+    --violet: #5f8fd8;
+    --violet-dim: rgba(95,143,216,0.14);
 
-    --green: #3dca7e;
-    --green-dim: rgba(61,202,126,0.12);
-    --red: #ff5c5c;
-    --red-dim: rgba(255,92,92,0.12);
+    --green: #169e76;
+    --green-dim: rgba(22,158,118,0.12);
+    --red: #d94d5d;
+    --red-dim: rgba(217,77,93,0.12);
 
-    --text: #F5E8D8;
-    --text2: #c4b09a;
-    --text3: #7a6e66;
+    --text: #102036;
+    --text2: #334760;
+    --text3: #6d7d93;
 
     --sidebar-w: 260px;
     --reasoning-w: 310px;
@@ -80,106 +81,32 @@ const css = `
     --text3: #5a5f7a;
   }
 
-  /* ══ MIDNIGHT THEME (DARK 2) ══ */
-  .theme-midnight {
-    --bg: #0b0e14;
-    --bg2: #11151c;
-    --bg3: #161b22;
-    --panel: transparent;
-    --surface: #1a1f29;
-    --surface2: #212836;
-    --border: rgba(255,255,255,0.06);
-    --border2: rgba(255,255,255,0.10);
-
-    /* Purple & Blue highlights */
-    --gold: #82aaff;
-    --gold2: #5c8cf5;
-    --gold-dim: rgba(130,170,255,0.15);
-    --gold-glow: rgba(130,170,255,0.2);
-
-    --cyan: #c792ea;
-    --cyan2: #b371de;
-    --cyan-dim: rgba(199,146,234,0.15);
-
-    --violet: #f07178;
-    --violet-dim: rgba(240,113,120,0.15);
-
-    --green: #c3e88d;
-    --green-dim: rgba(195,232,141,0.15);
-    --red: #ff5370;
-    --red-dim: rgba(255,83,112,0.15);
-
-    --text: #d0d4e3;
-    --text2: #8a91a8;
-    --text3: #58617a;
-  }
-
-  /* ══ CREAM THEME (LIGHT 1) ══ */
-  .theme-light {
-    --bg: #f9f6f0;
-    --bg2: #f2ede4;
-    --bg3: #e8e2d5;
-    --panel: transparent;
-    --surface: #ffffff;
-    --surface2: #fdfbf7;
-    --border: rgba(0,0,0,0.06);
-    --border2: rgba(0,0,0,0.10);
-
-    /* Warm autumn accents */
-    --gold: #d97706;
-    --gold2: #b45309;
-    --gold-dim: rgba(217,119,6,0.1);
-    --gold-glow: rgba(217,119,6,0.15);
-
-    --cyan: #059669;
-    --cyan2: #047857;
-    --cyan-dim: rgba(5,150,105,0.1);
-
-    --violet: #6366f1;
-    --violet-dim: rgba(99,102,241,0.1);
-
-    --green: #059669;
-    --green-dim: rgba(5,150,105,0.1);
-    --red: #dc2626;
-    --red-dim: rgba(220,38,38,0.1);
-
-    --text: #292524;
-    --text2: #57534e;
-    --text3: #78716c;
-  }
-
-  /* ══ ICE THEME (LIGHT 2) ══ */
+  /* ══ ICE THEME ══ */
   .theme-ice {
-    --bg: #f8fafc;
-    --bg2: #f1f5f9;
-    --bg3: #e2e8f0;
+    --bg: #efe7da;
+    --bg2: #f7f1e7;
+    --bg3: #fbf6ef;
     --panel: transparent;
-    --surface: #ffffff;
-    --surface2: #fdfdfd;
-    --border: rgba(15,23,42,0.06);
-    --border2: rgba(15,23,42,0.12);
-
-    /* Cool blue and violet accents */
-    --gold: #3b82f6; 
-    --gold2: #2563eb;
-    --gold-dim: rgba(59,130,246,0.1);
-    --gold-glow: rgba(59,130,246,0.15);
-
-    --cyan: #8b5cf6;
-    --cyan2: #7c3aed;
-    --cyan-dim: rgba(139,92,246,0.1);
-
-    --violet: #f43f5e;
-    --violet-dim: rgba(244,63,94,0.1);
-
-    --green: #10b981;
-    --green-dim: rgba(16,185,129,0.1);
-    --red: #ef4444;
-    --red-dim: rgba(239,68,68,0.1);
-
-    --text: #0f172a;
-    --text2: #334155;
-    --text3: #64748b;
+    --surface: rgba(255,255,255,0.84);
+    --surface2: rgba(255,255,255,0.94);
+    --border: rgba(15,23,42,0.12);
+    --border2: rgba(15,23,42,0.18);
+    --gold: #2d74da;
+    --gold2: #1d5fc4;
+    --gold-dim: rgba(45,116,218,0.12);
+    --gold-glow: rgba(45,116,218,0.16);
+    --cyan: #52b9d8;
+    --cyan2: #269dc1;
+    --cyan-dim: rgba(82,185,216,0.14);
+    --violet: #5f8fd8;
+    --violet-dim: rgba(95,143,216,0.14);
+    --green: #169e76;
+    --green-dim: rgba(22,158,118,0.12);
+    --red: #d94d5d;
+    --red-dim: rgba(217,77,93,0.12);
+    --text: #102036;
+    --text2: #334760;
+    --text3: #6d7d93;
   }
 
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -187,7 +114,10 @@ const css = `
 
   body {
     font-family: var(--body);
-    background: var(--bg);
+    background:
+      radial-gradient(circle at top left, rgba(250, 209, 156, 0.22), transparent 30%),
+      radial-gradient(circle at bottom right, rgba(82,185,216,0.12), transparent 26%),
+      var(--bg);
     color: var(--text);
     -webkit-font-smoothing: antialiased;
   }
@@ -196,6 +126,12 @@ const css = `
   .app-root {
     height: 100%;
     overflow: hidden;
+    background:
+      radial-gradient(circle at top left, rgba(250, 209, 156, 0.22), transparent 30%),
+      radial-gradient(circle at bottom right, rgba(82,185,216,0.12), transparent 26%),
+      var(--bg);
+  }
+  .theme-dark.app-root {
     background: var(--bg);
   }
 
@@ -523,13 +459,13 @@ const css = `
 
   /* profile card */
   .profile-card {
-    background: var(--surface); border: 1px solid rgba(232,184,75,0.18);
+    background: var(--surface); border: 1px solid color-mix(in srgb, var(--gold) 26%, transparent);
     border-radius: 14px; overflow: hidden; margin-top: 4px;
-    box-shadow: 0 4px 24px rgba(0,0,0,0.3), 0 0 0 1px rgba(232,184,75,0.06);
+    box-shadow: 0 4px 24px rgba(0,0,0,0.12), 0 0 0 1px color-mix(in srgb, var(--gold) 10%, transparent);
   }
   .pc-hdr {
     padding: 14px 16px; border-bottom: 1px solid var(--border);
-    background: linear-gradient(135deg, rgba(232,184,75,0.07), rgba(0,212,200,0.04));
+    background: linear-gradient(135deg, color-mix(in srgb, var(--gold) 10%, transparent), color-mix(in srgb, var(--cyan) 7%, transparent));
     display: flex; align-items: center; gap: 12px;
   }
   .pc-av {
@@ -549,7 +485,7 @@ const css = `
   .pc-sk { font-size: 8.5px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text3); margin-bottom: 4px; }
   .pc-sv { font-size: 12px; font-weight: 700; color: var(--gold2); font-family: var(--body); }
   .pc-tags { display: flex; gap: 5px; flex-wrap: wrap; }
-  .pc-tag { font-size: 9.5px; font-weight: 700; padding: 3px 9px; border-radius: 8px; background: var(--cyan-dim); color: var(--cyan); border: 1px solid rgba(0,212,200,0.18); letter-spacing: 0.05em; }
+  .pc-tag { font-size: 9.5px; font-weight: 700; padding: 3px 9px; border-radius: 8px; background: var(--cyan-dim); color: var(--cyan); border: 1px solid color-mix(in srgb, var(--cyan) 20%, transparent); letter-spacing: 0.05em; }
 
   /* rec cards */
   .rec-list { display: flex; flex-direction: column; gap: 6px; margin-top: 4px; }
@@ -958,17 +894,17 @@ const css = `
     position: absolute; inset: 0; z-index: 30;
     display: flex; align-items: center; justify-content: center;
     padding: 28px;
-    background: linear-gradient(180deg, rgba(7,8,13,0.78), rgba(7,8,13,0.92));
+    background: linear-gradient(180deg, color-mix(in srgb, var(--bg3) 72%, transparent), color-mix(in srgb, var(--bg) 88%, transparent));
     backdrop-filter: blur(10px);
   }
   .deck-card {
     width: min(560px, 100%);
     border-radius: 28px;
-    border: 1px solid rgba(255,255,255,0.08);
+    border: 1px solid var(--border2);
     background:
-      radial-gradient(circle at top, rgba(232,184,75,0.12), transparent 38%),
-      linear-gradient(160deg, rgba(18,21,32,0.98), rgba(10,12,18,0.98));
-    box-shadow: 0 24px 80px rgba(0,0,0,0.42);
+      radial-gradient(circle at top, color-mix(in srgb, var(--gold) 14%, transparent), transparent 38%),
+      linear-gradient(160deg, color-mix(in srgb, var(--surface2) 96%, white 4%), color-mix(in srgb, var(--surface) 94%, var(--bg2) 6%));
+    box-shadow: 0 24px 80px rgba(0,0,0,0.18);
     padding: 28px 28px 24px;
   }
   .deck-step {
@@ -990,9 +926,24 @@ const css = `
   }
   .deck-orb {
     width: 72px; height: 72px; border-radius: 22px; flex-shrink: 0;
-    background: linear-gradient(135deg, rgba(232,184,75,0.18), rgba(0,212,200,0.16));
-    border: 1px solid rgba(255,255,255,0.08);
-    display: flex; align-items: center; justify-content: center; font-size: 26px;
+    background: linear-gradient(135deg, color-mix(in srgb, var(--gold) 18%, white 6%), color-mix(in srgb, var(--cyan) 16%, white 4%));
+    border: 1px solid var(--border2);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--text);
+  }
+  .deck-orb-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    font-size: 28px;
+    line-height: 1;
+    vertical-align: middle;
+  }
+  .deck-orb-icon::before {
+    margin: 0;
+    line-height: 1;
   }
   .deck-track {
     margin-top: 20px; height: 5px; border-radius: 999px; overflow: hidden;
@@ -1011,7 +962,7 @@ const css = `
     color: var(--text); font-family: var(--body); font-size: 12px; font-weight: 600;
     text-align: left; cursor: pointer; transition: all 0.18s ease;
   }
-  .deck-option:hover { border-color: rgba(232,184,75,0.24); transform: translateY(-1px); }
+  .deck-option:hover { border-color: color-mix(in srgb, var(--gold) 24%, transparent); transform: translateY(-1px); }
   .deck-freeform {
     margin-top: 18px; display: flex; gap: 10px; align-items: center;
   }
@@ -1020,7 +971,7 @@ const css = `
     background: rgba(255,255,255,0.03); color: var(--text); padding: 0 14px;
     font-family: var(--body); font-size: 12px; outline: none;
   }
-  .deck-input:focus { border-color: rgba(232,184,75,0.3); }
+  .deck-input:focus { border-color: color-mix(in srgb, var(--gold) 30%, transparent); }
   .deck-submit {
     min-width: 116px; height: 46px; border-radius: 16px; border: none; cursor: pointer;
     background: linear-gradient(135deg, var(--gold), #c8780a); color: var(--bg);
@@ -1028,6 +979,9 @@ const css = `
   }
   .deck-note {
     margin-top: 14px; font-size: 10px; line-height: 1.6; color: var(--text3);
+  }
+  .deck-theme {
+    display: flex; justify-content: flex-end; margin-bottom: 8px;
   }
 
   .nav-btn:disabled,
@@ -1192,11 +1146,11 @@ const NUDGE_RULES = [
 ];
 
 const PROFILE_DECK = [
-  { nodeId: "q1", icon: "Stocks", hint: "Profile setup", title: "What do you want ET to help you with most?" },
-  { nodeId: "q2", icon: "Goal", hint: "Goal mapping", title: "What is your most important money goal right now?" },
-  { nodeId: "q3", icon: "Portfolio", hint: "Portfolio baseline", title: "Where are you in your investing journey today?" },
-  { nodeId: "q4", icon: "Risk", hint: "Risk fit", title: "How much market movement feels comfortable to you?" },
-  { nodeId: "q5", icon: "Alerts", hint: "Delivery preference", title: "How should ET show up for you every day?" },
+  { nodeId: "q1", icon: "↗", hint: "Profile setup", title: "What do you want ET to help you with most?" },
+  { nodeId: "q2", icon: "◎", hint: "Goal mapping", title: "What is your most important money goal right now?" },
+  { nodeId: "q3", icon: "◫", hint: "Portfolio baseline", title: "Where are you in your investing journey today?" },
+  { nodeId: "q4", icon: "◌", hint: "Risk fit", title: "How much market movement feels comfortable to you?" },
+  { nodeId: "q5", icon: "◔", hint: "Delivery preference", title: "How should ET show up for you every day?" },
 ];
 
 const FB_TAGS_POS = ["Highly Relevant", "Accurate", "Great UX", "Strong Recommendations", "Time-saving"];
@@ -1260,7 +1214,7 @@ function badgeForCategory(category = "") {
 
 function recommendationItemsFromData(conciergeData, fallbackItems) {
   const items = conciergeData?.core?.recommendations?.recommended_products || [];
-  if (!items.length) return fallbackItems;
+  if (!items.length) return conciergeData ? [] : fallbackItems;
 
   return items.map((item) => {
     const badge = badgeForCategory(item.category);
@@ -1276,7 +1230,7 @@ function recommendationItemsFromData(conciergeData, fallbackItems) {
 
 function partnerItemsFromData(conciergeData, fallbackItems) {
   const items = conciergeData?.marketplace?.offers || [];
-  if (!items.length) return fallbackItems;
+  if (!items.length) return conciergeData ? [] : fallbackItems;
 
   return items.map((item) => ({
     icon: item.category === "insurance" ? "🛡️" : item.category === "loan" ? "🏦" : item.category === "credit_card" ? "💳" : "📈",
@@ -1291,7 +1245,7 @@ function partnerItemsFromData(conciergeData, fallbackItems) {
 function masterclassItemsFromData(conciergeData, fallbackItems) {
   const touchpoints = conciergeData?.ecosystem?.prioritized_touchpoints || [];
   const learning = touchpoints.filter((item) => ["learning", "events"].includes(String(item.pillar).toLowerCase()));
-  if (!learning.length) return fallbackItems;
+  if (!learning.length) return conciergeData ? [] : fallbackItems;
 
   return learning.map((item) => ({
     icon: String(item.pillar).toLowerCase() === "events" ? "🏛️" : "🎓",
@@ -1336,20 +1290,30 @@ function extractArray(value) {
 }
 
 function actionItemsFromData(conciergeData) {
-  const actions = extractArray(conciergeData?.core?.dispatch?.actions);
-  return actions.map((item, index) => ({
-    title: item.label || item.name || `Suggested action ${index + 1}`,
-    desc: item.description || item.summary || item.next_step || "Recommended next step from the concierge pipeline.",
-    meta: item.channel || item.type || "dispatch",
+  const recActions = extractArray(conciergeData?.core?.recommendations?.recommended_actions).map((item, index) => ({
+    title: item.title || `Recommended action ${index + 1}`,
+    desc: item.description || "Recommended next step from the concierge pipeline.",
+    meta: `${titleize(item.priority || "medium")} priority · ${titleize(item.timeframe || "short_term")}`,
   }));
+
+  const dispatchActions = extractArray(conciergeData?.core?.dispatch?.actions).map((item, index) => {
+    const payload = item.payload || {};
+    return {
+      title: payload.function ? titleize(String(payload.function).replace(/^send_/, "").replace(/^save_/, "")) : `Dispatch action ${index + 1}`,
+      desc: payload.body || payload.subject || payload.html_preview || payload.plan_id || "Simulated ET dispatch action.",
+      meta: item.channel || item.type || "dispatch",
+    };
+  });
+
+  return [...recActions, ...dispatchActions].slice(0, 6);
 }
 
 function onboardingItemsFromData(conciergeData) {
-  const items = extractArray(conciergeData?.ecosystem?.onboarding_path);
+  const items = extractArray(conciergeData?.ecosystem?.onboarding_path?.phases);
   return items.map((item, index) => ({
-    title: item.step || item.name || `Step ${index + 1}`,
-    desc: item.detail || item.description || item.why || "Suggested ET onboarding move.",
-    meta: item.timeline || item.stage || `Step ${index + 1}`,
+    title: item.title || item.phase_id || `Step ${index + 1}`,
+    desc: (extractArray(item.objectives).join(" · ")) || (extractArray(item.host_prompts).join(" ")) || "Suggested ET onboarding move.",
+    meta: `${item.estimated_seconds || 60}s · ${item.phase_id || `Phase ${index + 1}`}`,
   }));
 }
 
@@ -1374,8 +1338,8 @@ function alertItemsFromData(conciergeData, activeChannels) {
   const crossSell = extractArray(conciergeData?.cross_sell?.opportunities).slice(0, 3).map((item, index) => ({
     icon: "Alert",
     title: item.name || item.title || `Opportunity ${index + 1}`,
-    body: item.why_now || item.summary || item.reason || "Suggested because of your current ET profile and timing.",
-    tag: item.trigger || "Suggested",
+    body: item.trigger_summary || item.pitch || item.summary || item.reason || "Suggested because of your current ET profile and timing.",
+    tag: item.channel || item.trigger || "Suggested",
     live: false,
   }));
 
@@ -1434,12 +1398,41 @@ function riskReductionStepsFromData(conciergeData) {
   return steps.slice(0, 4);
 }
 
-function FlashProfileDeck({ node, step, total, value, onValueChange, onOption, onSubmit, disabled }) {
+function ProfileDeckIcon({ step, name }) {
+  const iconClass = ({
+    1: "fi fi-rr-growth-chart-invest",
+    2: "fi fi-rr-tax-alt",
+    3: "fi fi-rr-wallet",
+    4: "fi fi-rr-shield-check",
+    5: "fi fi-rr-bell-ring",
+  })[step] || ({
+    growth: "fi fi-rr-growth-chart-invest",
+    tax: "fi fi-rr-tax-alt",
+    wallet: "fi fi-rr-wallet",
+    shield: "fi fi-rr-shield-check",
+    bell: "fi fi-rr-bell-ring",
+  })[name];
+
+  return iconClass
+    ? <i className={`deck-orb-icon ${iconClass}`} aria-hidden="true" />
+    : <span>ET</span>;
+}
+
+function FlashProfileDeck({ node, step, total, value, onValueChange, onOption, onSubmit, disabled, theme, onThemeChange }) {
   if (!node) return null;
 
   return (
     <div className="deck-overlay">
       <div className="deck-card">
+        <div className="deck-theme">
+          <div className="theme-select-wrap" title="Select Theme">
+            <select className="theme-select" value={theme} onChange={(event) => onThemeChange(event.target.value)}>
+              <option value="ice">Ice Cold</option>
+              <option value="dark">Classic Dark</option>
+            </select>
+            <span className="ts-chevron">▼</span>
+          </div>
+        </div>
         <div className="deck-step">Required profile · {step}/{total}</div>
         <div className="deck-head">
           <div>
@@ -1449,7 +1442,9 @@ function FlashProfileDeck({ node, step, total, value, onValueChange, onOption, o
               {node.bot.replace(/\*\*/g, "")} Finish this card to unlock chat, recommendations, navigator insights, and alerts.
             </div>
           </div>
-          <div className="deck-orb">{PROFILE_DECK[step - 1]?.icon || "ET"}</div>
+          <div className="deck-orb">
+            <ProfileDeckIcon step={step} name={PROFILE_DECK[step - 1]?.icon} />
+          </div>
         </div>
         <div className="deck-track">
           <div className="deck-fill" style={{ width: `${(step / total) * 100}%` }} />
@@ -1660,6 +1655,7 @@ function FinWidget({ profile, data }) {
 }
 
 // ─── FEEDBACK WIDGET ─────────────────────────────────────────────────────────
+// eslint-disable-next-line no-unused-vars
 function FeedbackWidget({ onSubmit }) {
   const [rating, setRating] = useState(0);
   const [hovered, setHov] = useState(0);
@@ -1732,7 +1728,7 @@ function NudgeBar({ nudge, onAction }) {
 
 // ─── MAIN APP ─────────────────────────────────────────────────────────────────
 export default function ETConcierge() {
-  const [theme, setTheme] = useState("warm"); // 'warm' = new default, 'dark' = legacy
+  const [theme, setTheme] = useState("ice");
   const [backendStatus, setBackendStatus] = useState("checking");
   const [messages, setMessages] = useState([]);
   const [inputVal, setInputVal] = useState("");
@@ -1845,6 +1841,7 @@ export default function ETConcierge() {
         body: JSON.stringify({
           conversation,
           rag_query: `What ET guidance best supports ${nextProfile.goal || "this user's financial goal"}?`,
+          use_live_llm: true,
         }),
       });
 
@@ -1872,6 +1869,7 @@ export default function ETConcierge() {
       body: JSON.stringify({
         transcript,
         message: userMessage,
+        use_live_llm: true,
       }),
     });
 
@@ -1982,10 +1980,9 @@ export default function ETConcierge() {
     if (nextId) gotoNode(nextId, newProfile);
   }, [thinking, currentNode, profile, profileKeys, addMessage, gotoNode, logBehavior, backendStatus, profilePct]);
 
-  const handleSend = useCallback(async () => {
-    const val = inputVal.trim();
-    if (!val || thinking || backendStatus !== "online" || profilePct < 100) return;
-    setInputVal("");
+  const submitChatPrompt = useCallback(async (rawValue) => {
+    const val = String(rawValue || "").trim();
+    if (!val || thinking || backendStatus !== "online" || profilePct < 100) return false;
     addMessage("user", val);
     logBehavior("freetext", { len: val.length });
     setActiveNudge(null);
@@ -2003,7 +2000,7 @@ export default function ETConcierge() {
       if (typeof node.next === "string") nextId = node.next;
       else if (typeof node.next === "object") nextId = Object.values(node.next)[0];
       if (nextId) gotoNode(nextId, newProfile);
-      return;
+      return true;
     }
 
     setThinking(true);
@@ -2018,7 +2015,7 @@ export default function ETConcierge() {
         result?.message || "I couldn't generate a useful answer just now. Please try again.",
         "text",
         null,
-        { showFeedback: true, agent: "rag" },
+        { showFeedback: false, agent: "rag" },
       );
       if (node?.profileKey) {
         addMessage(
@@ -2029,6 +2026,7 @@ export default function ETConcierge() {
           { agent: node.agent || "concierge" },
         );
       }
+      return true;
     } catch (error) {
       addMessage(
         "bot",
@@ -2037,13 +2035,22 @@ export default function ETConcierge() {
         null,
         { agent: "concierge" },
       );
+      return false;
     } finally {
       setThinking(false);
     }
-  }, [inputVal, thinking, backendStatus, profilePct, addMessage, logBehavior, currentNode, profile, profileKeys, gotoNode, fetchChatReply]);
+  }, [thinking, backendStatus, profilePct, addMessage, logBehavior, currentNode, profile, profileKeys, gotoNode, fetchChatReply]);
+
+  const handleSend = useCallback(async () => {
+    const val = inputVal.trim();
+    if (!val) return;
+    setInputVal("");
+    await submitChatPrompt(val);
+  }, [inputVal, submitChatPrompt]);
 
   const handleKey = (e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); handleSend(); } };
 
+  // eslint-disable-next-line no-unused-vars
   const handleFeedback = useCallback((msgId, fb) => {
     setFeedbacks(prev => [...prev, { msgId, ...fb }]);
     logBehavior("feedback", { rating: fb.rating, thumb: fb.thumb });
@@ -2100,11 +2107,12 @@ export default function ETConcierge() {
   const activeProfileStepNumber = profileLocked ? currentProfileStep + 1 : profileKeys.length;
   const currentQRs = !profileLocked ? (FLOWMAP[currentNode]?.qr || []) : [];
 
-  const routeToChat = useCallback((prompt, toastMessage = "Opened in chat") => {
+  const routeToChat = useCallback(async (prompt, toastMessage = "Opened in chat") => {
     setActiveNav("chat");
-    setInputVal(prompt);
+    setInputVal("");
     showToast("💬", toastMessage);
-  }, [showToast]);
+    await submitChatPrompt(prompt);
+  }, [showToast, submitChatPrompt]);
 
   const completeProfileStep = useCallback((rawValue) => {
     if (!activeProfileNode || backendStatus !== "online") return;
@@ -2171,7 +2179,7 @@ export default function ETConcierge() {
   }, [activeProfileNode, addMessage, backendStatus, fetchConciergeData, logBehavior, profile, profileKeys, scrollBottom]);
 
   return (
-    <div className={`app-root${theme !== "warm" ? ` theme-${theme}` : ""}`}>
+    <div className={`app-root theme-${theme}`}>
       <style>{css}</style>
       <div className="bg-grid" />
       <div className="app" style={{ position: "relative", zIndex: 1 }}>
@@ -2301,11 +2309,8 @@ export default function ETConcierge() {
             <div className="hdr-btns">
               <div className="theme-select-wrap" title="Select Theme">
                 <select className="theme-select" value={theme} onChange={(e) => setTheme(e.target.value)}>
-                  <option value="warm">🌊 Coral Theme</option>
-                  <option value="dark">🎨 Classic Theme</option>
-                  <option value="midnight">🌌 Midnight Mode</option>
-                  <option value="light">☕ Cream Mode</option>
-                  <option value="ice">❄️ Ice Mode</option>
+                  <option value="ice">Ice Cold</option>
+                  <option value="dark">Classic Dark</option>
                 </select>
                 <span className="ts-chevron">▼</span>
               </div>
@@ -2341,11 +2346,6 @@ export default function ETConcierge() {
                         </div>
                       </div>
 
-                      {m.role === "bot" && m.showFeedback && (
-                        <div style={{ paddingLeft: 38, marginTop: 2 }}>
-                          <FeedbackWidget onSubmit={(fb) => handleFeedback(m.id, fb)} />
-                        </div>
-                      )}
                     </div>
                   ))}
 
@@ -2416,10 +2416,10 @@ export default function ETConcierge() {
                     <div className="ws-kicker">Matched picks</div>
                     <RecCards items={liveRecommendations} onAction={a => {
                       logBehavior("rec_click", { a });
-                      routeToChat(`Explain why "${a}" is a good next step for me and what I should do first.`, "Moved to chat with this recommendation");
+                      routeToChat(`I am reviewing this ET recommendation: ${a}. Tell me what it is, why it fits my profile, and whether I should act on it now.`, "Moved to chat with this recommendation");
                     }} />
                     <div className="ws-actions">
-                      <button type="button" className="ws-btn secondary" onClick={() => routeToChat("Show me more ET product suggestions based on my profile.", "Opened chat for more suggestions")}>
+                      <button type="button" className="ws-btn secondary" onClick={() => routeToChat("What other ET options match my profile right now, and which one should I open next?", "Opened chat for more suggestions")}>
                         More suggestions
                       </button>
                     </div>
@@ -2434,7 +2434,7 @@ export default function ETConcierge() {
                         }))}
                         expandedKey={expandedWorkspaceItem}
                         onToggle={setExpandedWorkspaceItem}
-                        onAskConcierge={(item) => routeToChat(`Help me execute this recommended step: ${item.title}. ${item.desc}`, "Opened chat for this step")}
+                        onAskConcierge={(item) => routeToChat(`I want help with this ET step: ${item.title}. ${item.desc} What exactly should I do?`, "Opened chat for this step")}
                       />
                     ) : <div className="ws-empty">The backend has not returned action items yet. Ask the agent a few questions in Chat and this panel will fill in.</div>}
                   </div>
@@ -2448,7 +2448,7 @@ export default function ETConcierge() {
                         }))}
                         expandedKey={expandedWorkspaceItem}
                         onToggle={setExpandedWorkspaceItem}
-                        onAskConcierge={(item) => routeToChat(`Walk me through this ET onboarding step: ${item.title}. ${item.desc}`, "Opened chat for onboarding help")}
+                        onAskConcierge={(item) => routeToChat(`Walk me through this onboarding step in a simple way: ${item.title}. ${item.desc}`, "Opened chat for onboarding help")}
                       />
                     ) : <div className="ws-empty">Onboarding guidance will appear here after the concierge plan is generated.</div>}
                   </div>
@@ -2462,7 +2462,7 @@ export default function ETConcierge() {
                         }))}
                         expandedKey={expandedWorkspaceItem}
                         onToggle={setExpandedWorkspaceItem}
-                        onAskConcierge={(item) => routeToChat(`Tell me how ${item.title} fits my profile and whether I should use it next.`, "Opened chat for ecosystem guidance")}
+                        onAskConcierge={(item) => routeToChat(`How does this ET surface fit me: ${item.title}? ${item.desc}`, "Opened chat for ecosystem guidance")}
                       />
                     ) : <div className="ws-empty">This area is reserved for ET Prime, markets tools, courses, and events surfaced by the pipeline.</div>}
                   </div>
@@ -2482,7 +2482,7 @@ export default function ETConcierge() {
                 <div className="ws-card">
                   <FinWidget profile={profile} data={liveFinancialData} />
                   <div className="ws-actions">
-                    <button type="button" className="ws-btn secondary" onClick={() => routeToChat("Based on my financial navigator, what should I prioritize this month?", "Opened chat for navigator guidance")}>
+                    <button type="button" className="ws-btn secondary" onClick={() => routeToChat("Based on my current profile, portfolio gaps, and immediate needs, what should I prioritize this month?", "Opened chat for navigator guidance")}>
                       Discuss this plan in chat
                     </button>
                   </div>
@@ -2500,7 +2500,7 @@ export default function ETConcierge() {
                         }))}
                         expandedKey={expandedWorkspaceItem}
                         onToggle={setExpandedWorkspaceItem}
-                        onAskConcierge={(item) => routeToChat(`How do I fix this portfolio gap: ${item.desc}`, "Opened chat for portfolio gap guidance")}
+                        onAskConcierge={(item) => routeToChat(`I have this portfolio gap: ${item.desc}. Tell me what it means and how I should address it.`, "Opened chat for portfolio gap guidance")}
                       />
                     ) : <div className="ws-empty">No portfolio gaps have been synthesized yet.</div>}
                   </div>
@@ -2516,7 +2516,7 @@ export default function ETConcierge() {
                         }))}
                         expandedKey={expandedWorkspaceItem}
                         onToggle={setExpandedWorkspaceItem}
-                        onAskConcierge={(item) => routeToChat(`Help me act on this immediate financial need: ${item.desc}`, "Opened chat for immediate need guidance")}
+                        onAskConcierge={(item) => routeToChat(`I need help with this immediate financial need: ${item.desc}. What should I do first?`, "Opened chat for immediate need guidance")}
                       />
                     ) : <div className="ws-empty">Once the planner detects near-term needs, they will show up here.</div>}
                   </div>
@@ -2543,7 +2543,7 @@ export default function ETConcierge() {
                       <div className="alert-body">{item.body}</div>
                       <div className="alert-tag">{item.tag}</div>
                       <div className="ws-actions">
-                        <button type="button" className="ws-btn secondary" onClick={() => routeToChat(`Explain this alert and tell me whether I should act on it now: ${item.title}. ${item.body}`, "Opened chat for alert guidance")}>
+                        <button type="button" className="ws-btn secondary" onClick={() => routeToChat(`I got this ET alert: ${item.title}. ${item.body} Tell me what triggered it and whether it matters for me right now.`, "Opened chat for alert guidance")}>
                           Ask concierge
                         </button>
                       </div>
@@ -2577,6 +2577,8 @@ export default function ETConcierge() {
               onOption={completeProfileStep}
               onSubmit={() => completeProfileStep(deckInput)}
               disabled={thinking || backendStatus !== "online"}
+              theme={theme}
+              onThemeChange={setTheme}
             />
           )}
         </div>
@@ -2651,6 +2653,3 @@ export default function ETConcierge() {
     </div>
   );
 }
-
-
-
