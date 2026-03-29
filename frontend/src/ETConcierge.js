@@ -6,7 +6,49 @@ const API_BASE = process.env.REACT_APP_API_BASE || "http://127.0.0.1:8000";
 const css = `
   @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;0,900;1,600&family=Syne:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
 
+  /* ══ NEW THEME — dark + coral/orange accents (DEFAULT) ══ */
   :root {
+    --bg: #141414;
+    --bg2: #1a1a1a;
+    --bg3: #1f1f1f;
+    --panel: transparent;
+    --surface: #232323;
+    --surface2: #2c2c2c;
+    --border: rgba(255,255,255,0.07);
+    --border2: rgba(255,255,255,0.12);
+
+    --gold: #FF6F61;
+    --gold2: #ff8a7e;
+    --gold-dim: rgba(255,111,97,0.14);
+    --gold-glow: rgba(255,111,97,0.18);
+
+    --cyan: #FF4500;
+    --cyan2: #ff6533;
+    --cyan-dim: rgba(255,69,0,0.12);
+
+    --violet: #DAA520;
+    --violet-dim: rgba(218,165,32,0.13);
+
+    --green: #3dca7e;
+    --green-dim: rgba(61,202,126,0.12);
+    --red: #ff5c5c;
+    --red-dim: rgba(255,92,92,0.12);
+
+    --text: #F5E8D8;
+    --text2: #c4b09a;
+    --text3: #7a6e66;
+
+    --sidebar-w: 260px;
+    --reasoning-w: 310px;
+    --hdr: 58px;
+
+    --mono: 'JetBrains Mono', monospace;
+    --display: 'Playfair Display', serif;
+    --body: 'Syne', sans-serif;
+  }
+
+  /* ══ LEGACY THEME — original gold/cyan dark ══ */
+  .theme-dark {
     --bg: #07080d;
     --bg2: #0d0f1a;
     --bg3: #111420;
@@ -36,14 +78,108 @@ const css = `
     --text: #e8eaf2;
     --text2: #9095b0;
     --text3: #5a5f7a;
+  }
 
-    --sidebar-w: 260px;
-    --reasoning-w: 310px;
-    --hdr: 58px;
+  /* ══ MIDNIGHT THEME (DARK 2) ══ */
+  .theme-midnight {
+    --bg: #0b0e14;
+    --bg2: #11151c;
+    --bg3: #161b22;
+    --panel: transparent;
+    --surface: #1a1f29;
+    --surface2: #212836;
+    --border: rgba(255,255,255,0.06);
+    --border2: rgba(255,255,255,0.10);
 
-    --mono: 'JetBrains Mono', monospace;
-    --display: 'Playfair Display', serif;
-    --body: 'Syne', sans-serif;
+    /* Purple & Blue highlights */
+    --gold: #82aaff;
+    --gold2: #5c8cf5;
+    --gold-dim: rgba(130,170,255,0.15);
+    --gold-glow: rgba(130,170,255,0.2);
+
+    --cyan: #c792ea;
+    --cyan2: #b371de;
+    --cyan-dim: rgba(199,146,234,0.15);
+
+    --violet: #f07178;
+    --violet-dim: rgba(240,113,120,0.15);
+
+    --green: #c3e88d;
+    --green-dim: rgba(195,232,141,0.15);
+    --red: #ff5370;
+    --red-dim: rgba(255,83,112,0.15);
+
+    --text: #d0d4e3;
+    --text2: #8a91a8;
+    --text3: #58617a;
+  }
+
+  /* ══ CREAM THEME (LIGHT 1) ══ */
+  .theme-light {
+    --bg: #f9f6f0;
+    --bg2: #f2ede4;
+    --bg3: #e8e2d5;
+    --panel: transparent;
+    --surface: #ffffff;
+    --surface2: #fdfbf7;
+    --border: rgba(0,0,0,0.06);
+    --border2: rgba(0,0,0,0.10);
+
+    /* Warm autumn accents */
+    --gold: #d97706;
+    --gold2: #b45309;
+    --gold-dim: rgba(217,119,6,0.1);
+    --gold-glow: rgba(217,119,6,0.15);
+
+    --cyan: #059669;
+    --cyan2: #047857;
+    --cyan-dim: rgba(5,150,105,0.1);
+
+    --violet: #6366f1;
+    --violet-dim: rgba(99,102,241,0.1);
+
+    --green: #059669;
+    --green-dim: rgba(5,150,105,0.1);
+    --red: #dc2626;
+    --red-dim: rgba(220,38,38,0.1);
+
+    --text: #292524;
+    --text2: #57534e;
+    --text3: #78716c;
+  }
+
+  /* ══ ICE THEME (LIGHT 2) ══ */
+  .theme-ice {
+    --bg: #f8fafc;
+    --bg2: #f1f5f9;
+    --bg3: #e2e8f0;
+    --panel: transparent;
+    --surface: #ffffff;
+    --surface2: #fdfdfd;
+    --border: rgba(15,23,42,0.06);
+    --border2: rgba(15,23,42,0.12);
+
+    /* Cool blue and violet accents */
+    --gold: #3b82f6; 
+    --gold2: #2563eb;
+    --gold-dim: rgba(59,130,246,0.1);
+    --gold-glow: rgba(59,130,246,0.15);
+
+    --cyan: #8b5cf6;
+    --cyan2: #7c3aed;
+    --cyan-dim: rgba(139,92,246,0.1);
+
+    --violet: #f43f5e;
+    --violet-dim: rgba(244,63,94,0.1);
+
+    --green: #10b981;
+    --green-dim: rgba(16,185,129,0.1);
+    --red: #ef4444;
+    --red-dim: rgba(239,68,68,0.1);
+
+    --text: #0f172a;
+    --text2: #334155;
+    --text3: #64748b;
   }
 
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -56,10 +192,45 @@ const css = `
     -webkit-font-smoothing: antialiased;
   }
 
+  /* Root wrapper inherits theme */
+  .app-root {
+    height: 100%;
+    overflow: hidden;
+    background: var(--bg);
+  }
+
+  /* ══ THEME SELECTOR ══ */
+  .theme-select-wrap {
+    position: relative; display: inline-flex; align-items: center;
+  }
+  .theme-select {
+    appearance: none; -webkit-appearance: none;
+    background: var(--surface);
+    border: 1px solid var(--border2);
+    color: var(--text2);
+    padding: 5px 28px 5px 12px;
+    border-radius: 20px;
+    font-family: var(--body); font-size: 11px; font-weight: 700;
+    cursor: pointer; outline: none; transition: all 0.2s ease;
+    letter-spacing: 0.03em;
+  }
+  .theme-select:hover {
+    background: var(--gold-dim); border-color: var(--gold);
+    color: var(--gold); transform: translateY(-1px);
+    box-shadow: 0 4px 12px var(--gold-glow);
+  }
+  .theme-select option {
+    background: var(--surface2); color: var(--text); font-weight: 500;
+  }
+  .ts-chevron {
+    position: absolute; right: 10px; font-size: 9px; pointer-events: none; color: inherit; transition: color 0.2s;
+  }
+  .theme-select-wrap:hover .ts-chevron { color: var(--gold); }
+
   /* ══ SCROLLBARS ══ */
   ::-webkit-scrollbar { width: 2px; height: 2px; }
   ::-webkit-scrollbar-track { background: transparent; }
-  ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 2px; }
+  ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
 
   /* ══ LAYOUT ══ */
   .app { display: flex; height: 100vh; overflow: hidden; }
@@ -206,10 +377,10 @@ const css = `
 
   /* header */
   .chat-hdr {
-    height: var(--hdr); background: rgba(13,15,26,0.95);
+    height: var(--hdr); background: var(--surface);
     border-bottom: 1px solid var(--border);
     display: flex; align-items: center; padding: 0 22px; gap: 12px;
-    flex-shrink: 0; backdrop-filter: blur(12px);
+    flex-shrink: 0;
     position: relative; z-index: 10;
   }
 
@@ -296,9 +467,14 @@ const css = `
     color: var(--text);
   }
   .bubble.user {
+    background: linear-gradient(135deg, var(--violet), var(--cyan));
+    border: 1px solid var(--cyan-dim);
+    border-bottom-right-radius: 4px;
+    color: #fff;
+  }
+  .theme-dark .bubble.user {
     background: linear-gradient(135deg, #0d6e72, #0a5459);
     border: 1px solid rgba(0,212,200,0.2);
-    border-bottom-right-radius: 4px;
     color: #e0fffe;
   }
 
@@ -507,8 +683,8 @@ const css = `
 
   /* ══ INPUT AREA ══ */
   .input-area {
-    background: rgba(13,15,26,0.98); border-top: 1px solid var(--border);
-    padding: 14px 22px; flex-shrink: 0; backdrop-filter: blur(12px);
+    background: var(--surface); border-top: 1px solid var(--border);
+    padding: 14px 22px; flex-shrink: 0;
   }
   .stage-strip {
     display: flex; align-items: center; gap: 8px; margin-bottom: 10px;
@@ -615,9 +791,13 @@ const css = `
   /* ══ BG TEXTURE ══ */
   .bg-grid {
     position: fixed; inset: 0; pointer-events: none; z-index: 0;
+    background-image: linear-gradient(rgba(28,28,28,0.04) 1px, transparent 1px),
+                      linear-gradient(90deg, rgba(28,28,28,0.04) 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
+  .theme-dark .bg-grid {
     background-image: linear-gradient(rgba(255,255,255,0.012) 1px, transparent 1px),
                       linear-gradient(90deg, rgba(255,255,255,0.012) 1px, transparent 1px);
-    background-size: 40px 40px;
   }
 
   /* workspace */
@@ -1510,21 +1690,21 @@ function FeedbackWidget({ onSubmit }) {
     <div className="fb-widget">
       <div className="fb-header">⭐ Rate this interaction</div>
       <div className="fb-stars">
-        {[1,2,3,4,5].map(s => (
-          <div key={s} className={`fb-star ${(hovered||rating)>=s?"sel":""}`}
+        {[1, 2, 3, 4, 5].map(s => (
+          <div key={s} className={`fb-star ${(hovered || rating) >= s ? "sel" : ""}`}
             onMouseEnter={() => setHov(s)} onMouseLeave={() => setHov(0)}
             onClick={() => setRating(s)}>
-            {(hovered||rating)>=s?"⭐":"☆"}
+            {(hovered || rating) >= s ? "⭐" : "☆"}
           </div>
         ))}
       </div>
       <div className="fb-thumbs">
-        <div className={`fb-thumb ${thumb==="up"?"sel-up":""}`} onClick={() => { setThumb("up"); setTags([]); }}>👍 Helpful</div>
-        <div className={`fb-thumb ${thumb==="down"?"sel-down":""}`} onClick={() => { setThumb("down"); setTags([]); }}>👎 Needs Work</div>
+        <div className={`fb-thumb ${thumb === "up" ? "sel-up" : ""}`} onClick={() => { setThumb("up"); setTags([]); }}>👍 Helpful</div>
+        <div className={`fb-thumb ${thumb === "down" ? "sel-down" : ""}`} onClick={() => { setThumb("down"); setTags([]); }}>👎 Needs Work</div>
       </div>
       {thumb !== null && (
         <div className="fb-tags">
-          {tagList.map(t => <div key={t} className={`fb-tag ${tags.includes(t)?"sel":""}`} onClick={() => toggle(t)}>{t}</div>)}
+          {tagList.map(t => <div key={t} className={`fb-tag ${tags.includes(t) ? "sel" : ""}`} onClick={() => toggle(t)}>{t}</div>)}
         </div>
       )}
       <textarea className="fb-textarea" rows={2} placeholder="Any other comments? (optional)"
@@ -1552,6 +1732,7 @@ function NudgeBar({ nudge, onAction }) {
 
 // ─── MAIN APP ─────────────────────────────────────────────────────────────────
 export default function ETConcierge() {
+  const [theme, setTheme] = useState("warm"); // 'warm' = new default, 'dark' = legacy
   const [backendStatus, setBackendStatus] = useState("checking");
   const [messages, setMessages] = useState([]);
   const [inputVal, setInputVal] = useState("");
@@ -1990,7 +2171,7 @@ export default function ETConcierge() {
   }, [activeProfileNode, addMessage, backendStatus, fetchConciergeData, logBehavior, profile, profileKeys, scrollBottom]);
 
   return (
-    <>
+    <div className={`app-root${theme !== "warm" ? ` theme-${theme}` : ""}`}>
       <style>{css}</style>
       <div className="bg-grid" />
       <div className="app" style={{ position: "relative", zIndex: 1 }}>
@@ -2118,6 +2299,16 @@ export default function ETConcierge() {
             </div>
 
             <div className="hdr-btns">
+              <div className="theme-select-wrap" title="Select Theme">
+                <select className="theme-select" value={theme} onChange={(e) => setTheme(e.target.value)}>
+                  <option value="warm">🌊 Coral Theme</option>
+                  <option value="dark">🎨 Classic Theme</option>
+                  <option value="midnight">🌌 Midnight Mode</option>
+                  <option value="light">☕ Cream Mode</option>
+                  <option value="ice">❄️ Ice Mode</option>
+                </select>
+                <span className="ts-chevron">▼</span>
+              </div>
               <button className="hdr-btn" title="Inner Monologue" onClick={() => setReasoningOpen(o => !o)}>🧠</button>
               <button className="hdr-btn" title="Restart" onClick={restartChat}>↺</button>
             </div>
@@ -2125,87 +2316,87 @@ export default function ETConcierge() {
           <div className={`workspace-shell ${profileLocked ? "locked" : ""}`}>
             {activeNav === "chat" && (
               <>
-          <div className="msgs" ref={msgsRef}>
-            {messages.map(m => (
-              <div key={m.id}>
-                <div className={`msg-row msg-animate ${m.role === "user" ? "user" : ""}`}>
-                  <div className={`msg-av ${m.role === "bot" ? "bot" : "usr"}`}>{m.role === "bot" ? "ET" : "You"}</div>
-                  <div className="msg-body">
-                    {m.role === "bot" && <AgentBadge agent={m.agent || "concierge"} />}
+                <div className="msgs" ref={msgsRef}>
+                  {messages.map(m => (
+                    <div key={m.id}>
+                      <div className={`msg-row msg-animate ${m.role === "user" ? "user" : ""}`}>
+                        <div className={`msg-av ${m.role === "bot" ? "bot" : "usr"}`}>{m.role === "bot" ? "ET" : "You"}</div>
+                        <div className="msg-body">
+                          {m.role === "bot" && <AgentBadge agent={m.agent || "concierge"} />}
 
-                    {m.type === "profile_card" && m.extra ? (
-                      <><div className="bubble bot"><BubbleText text={m.content} /></div><ProfileCard profile={liveProfile} /></>
-                    ) : m.type === "recommendations" ? (
-                      <><div className="bubble bot"><BubbleText text={m.content} /></div><RecCards items={liveRecommendations} onAction={a => { showToast("🔗", a); logBehavior("rec_click", { a }); }} /></>
-                    ) : m.type === "fin_widget" ? (
-                      <><div className="bubble bot"><BubbleText text={m.content} /></div><FinWidget profile={profile} data={liveFinancialData} /></>
-                    ) : m.type === "partner_recs" ? (
-                      <><div className="bubble bot"><BubbleText text={m.content} /></div><RecCards items={livePartnerRecommendations} onAction={a => { showToast("🔗", a); logBehavior("partner_click", { a }); }} /></>
-                    ) : m.type === "masterclass_recs" ? (
-                      <><div className="bubble bot"><BubbleText text={m.content} /></div><RecCards items={liveMasterclassRecommendations} onAction={a => { showToast("🎓", a); logBehavior("masterclass_click", { a }); }} /></>
-                    ) : (
-                      <div className={`bubble ${m.role === "bot" ? "bot" : "user"}`}><BubbleText text={m.content} /></div>
-                    )}
-                    <div className="msg-ts">{m.time}</div>
-                  </div>
-                </div>
+                          {m.type === "profile_card" && m.extra ? (
+                            <><div className="bubble bot"><BubbleText text={m.content} /></div><ProfileCard profile={liveProfile} /></>
+                          ) : m.type === "recommendations" ? (
+                            <><div className="bubble bot"><BubbleText text={m.content} /></div><RecCards items={liveRecommendations} onAction={a => { showToast("🔗", a); logBehavior("rec_click", { a }); }} /></>
+                          ) : m.type === "fin_widget" ? (
+                            <><div className="bubble bot"><BubbleText text={m.content} /></div><FinWidget profile={profile} data={liveFinancialData} /></>
+                          ) : m.type === "partner_recs" ? (
+                            <><div className="bubble bot"><BubbleText text={m.content} /></div><RecCards items={livePartnerRecommendations} onAction={a => { showToast("🔗", a); logBehavior("partner_click", { a }); }} /></>
+                          ) : m.type === "masterclass_recs" ? (
+                            <><div className="bubble bot"><BubbleText text={m.content} /></div><RecCards items={liveMasterclassRecommendations} onAction={a => { showToast("🎓", a); logBehavior("masterclass_click", { a }); }} /></>
+                          ) : (
+                            <div className={`bubble ${m.role === "bot" ? "bot" : "user"}`}><BubbleText text={m.content} /></div>
+                          )}
+                          <div className="msg-ts">{m.time}</div>
+                        </div>
+                      </div>
 
-                {m.role === "bot" && m.showFeedback && (
-                  <div style={{ paddingLeft: 38, marginTop: 2 }}>
-                    <FeedbackWidget onSubmit={(fb) => handleFeedback(m.id, fb)} />
-                  </div>
-                )}
-              </div>
-            ))}
-
-            {thinking && (
-              <div className="msg-row msg-animate">
-                <div className="msg-av bot">ET</div>
-                <div className="msg-body">
-                  <AgentBadge agent={activeAgent} />
-                  <div className="thinking">
-                    <div className="t-dot" /><div className="t-dot" /><div className="t-dot" />
-                    <span className="t-label">{activeAgent} processing…</span>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {!thinking && activeNudge && (
-              <div style={{ paddingLeft: 38 }}>
-                <NudgeBar nudge={activeNudge} onAction={() => {
-                  showToast(activeNudge.icon, activeNudge.cta);
-                  logBehavior("nudge_click", { trigger: activeNudge.trigger });
-                  setActiveNudge(null);
-                }} />
-              </div>
-            )}
-
-            {!thinking && backendStatus === "online" && currentQRs.length > 0 && (
-              <div style={{ paddingLeft: 38 }}>
-                <div className="qrs">
-                  {currentQRs.map(qr => (
-                    <button key={qr} className="qr" onClick={() => handleQuickReply(qr)}>{qr}</button>
+                      {m.role === "bot" && m.showFeedback && (
+                        <div style={{ paddingLeft: 38, marginTop: 2 }}>
+                          <FeedbackWidget onSubmit={(fb) => handleFeedback(m.id, fb)} />
+                        </div>
+                      )}
+                    </div>
                   ))}
-                </div>
-              </div>
-            )}
-          </div>
 
-          <div className="input-area">
-            <div className="stage-strip">
-              <div className="stage-dot" />
-              <span className="stage-text">{stageLabel}</span>
-              <div className="stage-pill">{stagePill}</div>
-            </div>
-            <div className="input-row">
-              <textarea className="input-box"
-                placeholder={backendStatus === "online" && !profileLocked ? "Type a message or tap a suggestion above…" : backendStatus === "online" ? "Complete your profile to start chatting." : "Backend offline. Try again later."}
-                value={inputVal} onChange={e => setInputVal(e.target.value)}
-                onKeyDown={handleKey} rows={1} disabled={backendStatus !== "online" || profileLocked} />
-              <button className="send-btn" onClick={handleSend} disabled={backendStatus !== "online" || profileLocked}>➤</button>
-            </div>
-          </div>
+                  {thinking && (
+                    <div className="msg-row msg-animate">
+                      <div className="msg-av bot">ET</div>
+                      <div className="msg-body">
+                        <AgentBadge agent={activeAgent} />
+                        <div className="thinking">
+                          <div className="t-dot" /><div className="t-dot" /><div className="t-dot" />
+                          <span className="t-label">{activeAgent} processing…</span>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {!thinking && activeNudge && (
+                    <div style={{ paddingLeft: 38 }}>
+                      <NudgeBar nudge={activeNudge} onAction={() => {
+                        showToast(activeNudge.icon, activeNudge.cta);
+                        logBehavior("nudge_click", { trigger: activeNudge.trigger });
+                        setActiveNudge(null);
+                      }} />
+                    </div>
+                  )}
+
+                  {!thinking && backendStatus === "online" && currentQRs.length > 0 && (
+                    <div style={{ paddingLeft: 38 }}>
+                      <div className="qrs">
+                        {currentQRs.map(qr => (
+                          <button key={qr} className="qr" onClick={() => handleQuickReply(qr)}>{qr}</button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                <div className="input-area">
+                  <div className="stage-strip">
+                    <div className="stage-dot" />
+                    <span className="stage-text">{stageLabel}</span>
+                    <div className="stage-pill">{stagePill}</div>
+                  </div>
+                  <div className="input-row">
+                    <textarea className="input-box"
+                      placeholder={backendStatus === "online" && !profileLocked ? "Type a message or tap a suggestion above…" : backendStatus === "online" ? "Complete your profile to start chatting." : "Backend offline. Try again later."}
+                      value={inputVal} onChange={e => setInputVal(e.target.value)}
+                      onKeyDown={handleKey} rows={1} disabled={backendStatus !== "online" || profileLocked} />
+                    <button className="send-btn" onClick={handleSend} disabled={backendStatus !== "online" || profileLocked}>➤</button>
+                  </div>
+                </div>
               </>
             )}
             {activeNav === "recs" && (
@@ -2457,7 +2648,7 @@ export default function ETConcierge() {
         <span className="toast-icon">{toast.icon}</span>
         {toast.msg}
       </div>
-    </>
+    </div>
   );
 }
 
