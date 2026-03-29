@@ -80,6 +80,108 @@ const css = `
     --text3: #5a5f7a;
   }
 
+  /* ══ MIDNIGHT THEME (DARK 2) ══ */
+  .theme-midnight {
+    --bg: #0b0e14;
+    --bg2: #11151c;
+    --bg3: #161b22;
+    --panel: transparent;
+    --surface: #1a1f29;
+    --surface2: #212836;
+    --border: rgba(255,255,255,0.06);
+    --border2: rgba(255,255,255,0.10);
+
+    /* Purple & Blue highlights */
+    --gold: #82aaff;
+    --gold2: #5c8cf5;
+    --gold-dim: rgba(130,170,255,0.15);
+    --gold-glow: rgba(130,170,255,0.2);
+
+    --cyan: #c792ea;
+    --cyan2: #b371de;
+    --cyan-dim: rgba(199,146,234,0.15);
+
+    --violet: #f07178;
+    --violet-dim: rgba(240,113,120,0.15);
+
+    --green: #c3e88d;
+    --green-dim: rgba(195,232,141,0.15);
+    --red: #ff5370;
+    --red-dim: rgba(255,83,112,0.15);
+
+    --text: #d0d4e3;
+    --text2: #8a91a8;
+    --text3: #58617a;
+  }
+
+  /* ══ CREAM THEME (LIGHT 1) ══ */
+  .theme-light {
+    --bg: #f9f6f0;
+    --bg2: #f2ede4;
+    --bg3: #e8e2d5;
+    --panel: transparent;
+    --surface: #ffffff;
+    --surface2: #fdfbf7;
+    --border: rgba(0,0,0,0.06);
+    --border2: rgba(0,0,0,0.10);
+
+    /* Warm autumn accents */
+    --gold: #d97706;
+    --gold2: #b45309;
+    --gold-dim: rgba(217,119,6,0.1);
+    --gold-glow: rgba(217,119,6,0.15);
+
+    --cyan: #059669;
+    --cyan2: #047857;
+    --cyan-dim: rgba(5,150,105,0.1);
+
+    --violet: #6366f1;
+    --violet-dim: rgba(99,102,241,0.1);
+
+    --green: #059669;
+    --green-dim: rgba(5,150,105,0.1);
+    --red: #dc2626;
+    --red-dim: rgba(220,38,38,0.1);
+
+    --text: #292524;
+    --text2: #57534e;
+    --text3: #78716c;
+  }
+
+  /* ══ ICE THEME (LIGHT 2) ══ */
+  .theme-ice {
+    --bg: #f8fafc;
+    --bg2: #f1f5f9;
+    --bg3: #e2e8f0;
+    --panel: transparent;
+    --surface: #ffffff;
+    --surface2: #fdfdfd;
+    --border: rgba(15,23,42,0.06);
+    --border2: rgba(15,23,42,0.12);
+
+    /* Cool blue and violet accents */
+    --gold: #3b82f6; 
+    --gold2: #2563eb;
+    --gold-dim: rgba(59,130,246,0.1);
+    --gold-glow: rgba(59,130,246,0.15);
+
+    --cyan: #8b5cf6;
+    --cyan2: #7c3aed;
+    --cyan-dim: rgba(139,92,246,0.1);
+
+    --violet: #f43f5e;
+    --violet-dim: rgba(244,63,94,0.1);
+
+    --green: #10b981;
+    --green-dim: rgba(16,185,129,0.1);
+    --red: #ef4444;
+    --red-dim: rgba(239,68,68,0.1);
+
+    --text: #0f172a;
+    --text2: #334155;
+    --text3: #64748b;
+  }
+
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   html, body, #root { height: 100%; overflow: hidden; }
 
@@ -97,29 +199,38 @@ const css = `
     background: var(--bg);
   }
 
-  /* ══ THEME TOGGLE BUTTON ══ */
-  .theme-toggle-btn {
-    display: flex; align-items: center; gap: 6px;
-    padding: 5px 12px; border-radius: 20px;
-    border: 1px solid var(--border2);
-    background: var(--surface); cursor: pointer;
-    font-family: var(--body); font-size: 11px; font-weight: 700;
-    color: var(--text2); transition: all 0.2s ease;
-    white-space: nowrap; letter-spacing: 0.03em;
+  /* ══ THEME SELECTOR ══ */
+  .theme-select-wrap {
+    position: relative; display: inline-flex; align-items: center;
   }
-  .theme-toggle-btn:hover {
-    background: var(--gold-dim);
-    border-color: var(--gold);
-    color: var(--gold);
-    transform: translateY(-1px);
+  .theme-select {
+    appearance: none; -webkit-appearance: none;
+    background: var(--surface);
+    border: 1px solid var(--border2);
+    color: var(--text2);
+    padding: 5px 28px 5px 12px;
+    border-radius: 20px;
+    font-family: var(--body); font-size: 11px; font-weight: 700;
+    cursor: pointer; outline: none; transition: all 0.2s ease;
+    letter-spacing: 0.03em;
+  }
+  .theme-select:hover {
+    background: var(--gold-dim); border-color: var(--gold);
+    color: var(--gold); transform: translateY(-1px);
     box-shadow: 0 4px 12px var(--gold-glow);
   }
-  .theme-toggle-btn .theme-icon { font-size: 13px; }
+  .theme-select option {
+    background: var(--surface2); color: var(--text); font-weight: 500;
+  }
+  .ts-chevron {
+    position: absolute; right: 10px; font-size: 9px; pointer-events: none; color: inherit; transition: color 0.2s;
+  }
+  .theme-select-wrap:hover .ts-chevron { color: var(--gold); }
 
   /* ══ SCROLLBARS ══ */
   ::-webkit-scrollbar { width: 2px; height: 2px; }
   ::-webkit-scrollbar-track { background: transparent; }
-  ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 2px; }
+  ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
 
   /* ══ LAYOUT ══ */
   .app { display: flex; height: 100vh; overflow: hidden; }
@@ -357,7 +468,7 @@ const css = `
   }
   .bubble.user {
     background: linear-gradient(135deg, var(--violet), var(--cyan));
-    border: 1px solid rgba(255,69,0,0.18);
+    border: 1px solid var(--cyan-dim);
     border-bottom-right-radius: 4px;
     color: #fff;
   }
@@ -2060,7 +2171,7 @@ export default function ETConcierge() {
   }, [activeProfileNode, addMessage, backendStatus, fetchConciergeData, logBehavior, profile, profileKeys, scrollBottom]);
 
   return (
-    <div className={`app-root${theme === "dark" ? " theme-dark" : ""}`}>
+    <div className={`app-root${theme !== "warm" ? ` theme-${theme}` : ""}`}>
       <style>{css}</style>
       <div className="bg-grid" />
       <div className="app" style={{ position: "relative", zIndex: 1 }}>
@@ -2188,14 +2299,16 @@ export default function ETConcierge() {
             </div>
 
             <div className="hdr-btns">
-              <button
-                className="theme-toggle-btn"
-                title={theme === "warm" ? "Switch to classic theme" : "Switch to new coral theme"}
-                onClick={() => setTheme(t => t === "warm" ? "dark" : "warm")}
-              >
-                <span className="theme-icon">{theme === "warm" ? "🎨" : "🌊"}</span>
-                {theme === "warm" ? "Classic Theme" : "Coral Theme"}
-              </button>
+              <div className="theme-select-wrap" title="Select Theme">
+                <select className="theme-select" value={theme} onChange={(e) => setTheme(e.target.value)}>
+                  <option value="warm">🌊 Coral Theme</option>
+                  <option value="dark">🎨 Classic Theme</option>
+                  <option value="midnight">🌌 Midnight Mode</option>
+                  <option value="light">☕ Cream Mode</option>
+                  <option value="ice">❄️ Ice Mode</option>
+                </select>
+                <span className="ts-chevron">▼</span>
+              </div>
               <button className="hdr-btn" title="Inner Monologue" onClick={() => setReasoningOpen(o => !o)}>🧠</button>
               <button className="hdr-btn" title="Restart" onClick={restartChat}>↺</button>
             </div>
