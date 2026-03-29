@@ -102,8 +102,9 @@ class SimulatedChannel(str, Enum):
 class DispatchedAction(BaseModel):
     channel: SimulatedChannel
     payload: dict[str, Any]
-    status: Literal["simulated_ok", "simulated_pending", "skipped"]
-    provider_mock: str = Field(default="mock", description="e.g. twilio_mock, smtp_mock")
+    status: Literal["simulated_ok", "simulated_pending", "sent", "failed", "skipped"]
+    provider_mock: str = Field(default="mock", description="Delivery provider, e.g. twilio, smtp, twilio_mock")
+    error_detail: Optional[str] = None
 
 
 class ActionDispatchResult(BaseModel):
