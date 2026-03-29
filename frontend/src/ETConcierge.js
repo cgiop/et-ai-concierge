@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect, useCallback, useMemo } from "react";
 
 const API_BASE = process.env.REACT_APP_API_BASE || "http://127.0.0.1:8000";
+const BEHAVIOR_STORAGE_KEY = "et_concierge_behavior_events";
 
 // ─── STYLES ───────────────────────────────────────────────────────────────────
 const css = `
@@ -750,17 +751,25 @@ const css = `
     display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 16px;
   }
+  .ws-grid-span2 { grid-column: 1 / -1; }
+  .ws-welcome-open, .ws-welcome-close { font-size: 12px; line-height: 1.65; color: var(--text2); margin-top: 10px; }
+  .ws-welcome-beat { margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--border); }
+  .ws-welcome-beat-title { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--cyan); margin-bottom: 4px; }
+  .ws-welcome-beat-body { font-size: 11px; line-height: 1.55; color: var(--text); }
+  .ws-welcome-cues { font-size: 10px; color: var(--text3); margin-top: 6px; }
+  .ws-welcome-note { font-size: 9px; color: var(--text3); margin-top: 10px; font-family: var(--mono); line-height: 1.45; }
   .ws-card {
-    background: rgba(255,255,255,0.025);
-    border: 1px solid var(--border);
+    background: color-mix(in srgb, var(--surface2) 94%, white 6%);
+    border: 1px solid var(--border2);
     border-radius: 16px;
     padding: 16px 18px;
-    box-shadow: inset 0 1px 0 rgba(255,255,255,0.03);
+    box-shadow: 0 12px 34px rgba(15,23,42,0.08), inset 0 1px 0 rgba(255,255,255,0.4);
   }
   .ws-card.hero {
     background:
-      radial-gradient(circle at top right, rgba(232,184,75,0.12), transparent 36%),
-      linear-gradient(145deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+      radial-gradient(circle at top right, color-mix(in srgb, var(--gold) 16%, transparent), transparent 38%),
+      linear-gradient(145deg, color-mix(in srgb, var(--surface2) 96%, white 4%), color-mix(in srgb, var(--surface) 92%, var(--bg2) 8%));
+    border-color: color-mix(in srgb, var(--gold) 24%, var(--border2));
   }
   .ws-card-title {
     font-family: var(--display); font-size: 18px; font-weight: 700;
@@ -791,16 +800,16 @@ const css = `
     display: flex; flex-direction: column; gap: 10px;
   }
   .ws-list-item {
-    padding: 12px 14px; border-radius: 12px; border: 1px solid var(--border);
-    background: rgba(255,255,255,0.02);
+    padding: 12px 14px; border-radius: 12px; border: 1px solid var(--border2);
+    background: color-mix(in srgb, var(--surface) 92%, white 8%);
     transition: border-color 0.18s ease, background 0.18s ease;
   }
   .ws-list-item.expandable {
     cursor: pointer;
   }
   .ws-list-item.expandable:hover {
-    border-color: rgba(232,184,75,0.18);
-    background: rgba(255,255,255,0.03);
+    border-color: color-mix(in srgb, var(--gold) 32%, var(--border2));
+    background: color-mix(in srgb, var(--gold-dim) 48%, var(--surface2));
   }
   .ws-list-title {
     font-size: 12px; font-weight: 700; color: var(--text);
@@ -830,6 +839,29 @@ const css = `
     padding: 5px 10px; border-radius: 999px; border: 1px solid var(--border2);
     background: rgba(255,255,255,0.03); font-size: 10px; color: var(--text2);
   }
+  .ws-onb-phase {
+    margin-bottom: 12px;
+    padding: 12px 14px; border-radius: 12px; border: 1px solid var(--border2);
+    background: color-mix(in srgb, var(--surface) 92%, white 8%);
+  }
+  .ws-onb-title { font-size: 12px; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+  .ws-onb-sub { font-size: 10px; line-height: 1.55; color: var(--text3); }
+  .ws-onb-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+  .ws-onb-chip {
+    border: 1px solid var(--border2);
+    background: rgba(255,255,255,0.04);
+    color: var(--text2);
+    padding: 6px 11px; border-radius: 999px; font-size: 10px; cursor: pointer;
+    font-family: var(--body); text-align: left; max-width: 100%; line-height: 1.35;
+    transition: border-color 0.15s ease, background 0.15s ease;
+  }
+  .ws-onb-chip:hover { border-color: color-mix(in srgb, var(--gold) 35%, var(--border2)); }
+  .ws-onb-chip.on {
+    border-color: var(--gold);
+    background: var(--gold-dim);
+    color: var(--gold2);
+  }
+  .ws-onb-foot { margin-top: 12px; font-size: 11px; line-height: 1.5; color: var(--text2); }
   .ws-actions {
     display: flex; gap: 10px; flex-wrap: wrap; margin-top: 14px;
   }
@@ -852,14 +884,15 @@ const css = `
   .ws-empty {
     padding: 18px; border: 1px dashed var(--border2); border-radius: 12px;
     color: var(--text3); font-size: 11px; line-height: 1.6;
-    background: rgba(255,255,255,0.015);
+    background: color-mix(in srgb, var(--surface) 85%, white 15%);
   }
   .alert-grid {
     display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px;
   }
   .alert-card {
-    padding: 14px 16px; border-radius: 14px; border: 1px solid var(--border);
-    background: linear-gradient(145deg, rgba(255,255,255,0.03), rgba(255,255,255,0.015));
+    padding: 14px 16px; border-radius: 14px; border: 1px solid var(--border2);
+    background: linear-gradient(145deg, color-mix(in srgb, var(--surface2) 96%, white 4%), color-mix(in srgb, var(--surface) 90%, var(--bg2) 10%));
+    box-shadow: 0 10px 28px rgba(15,23,42,0.07);
   }
   .alert-card.live { border-color: rgba(0,212,200,0.22); }
   .alert-top {
@@ -868,7 +901,7 @@ const css = `
   .alert-icon {
     width: 34px; height: 34px; border-radius: 10px;
     display: flex; align-items: center; justify-content: center;
-    background: rgba(255,255,255,0.05); font-size: 15px;
+    background: color-mix(in srgb, var(--surface) 88%, white 12%); font-size: 15px;
   }
   .alert-title { font-size: 12px; font-weight: 700; color: var(--text); }
   .alert-body { font-size: 11px; line-height: 1.6; color: var(--text2); }
@@ -1153,6 +1186,36 @@ const PROFILE_DECK = [
   { nodeId: "q5", icon: "◔", hint: "Delivery preference", title: "How should ET show up for you every day?" },
 ];
 
+const OPTIONAL_ONBOARDING_QUESTIONS = [
+  {
+    id: "horizon",
+    title: "What is your time horizon right now?",
+    options: [
+      { label: "Less than 1 year", summary: "short-term decisions and cash safety" },
+      { label: "1 to 3 years", summary: "near-term planning with balanced risk" },
+      { label: "More than 3 years", summary: "long-term growth and compounding" },
+    ],
+  },
+  {
+    id: "et_focus",
+    title: "What should ET help you with most often?",
+    options: [
+      { label: "Market tracking", summary: "watchlists, alerts, and market context" },
+      { label: "Goal planning", summary: "financial planning and action steps" },
+      { label: "Learning & explainers", summary: "deep reads, masterclasses, and guides" },
+    ],
+  },
+  {
+    id: "service_interest",
+    title: "Which service area matters most right now?",
+    options: [
+      { label: "Wealth building", summary: "investing, funds, and long-term growth" },
+      { label: "Protection & insurance", summary: "term, health, and safety gaps" },
+      { label: "Loans & credit", summary: "EMI, borrowing, and card comparisons" },
+    ],
+  },
+];
+
 const FB_TAGS_POS = ["Highly Relevant", "Accurate", "Great UX", "Strong Recommendations", "Time-saving"];
 const FB_TAGS_NEG = ["Too Generic", "Not Relevant", "Too Many Steps", "Missing Products", "Unclear"];
 
@@ -1174,20 +1237,79 @@ function titleize(value) {
     .replace(/\b\w/g, (char) => char.toUpperCase());
 }
 
+const PROFILE_SEMANTICS = {
+  interests: {
+    "Stock Markets": "stock markets, investing, listed companies, and market tracking",
+    "Personal Finance": "personal finance, savings, tax planning, and household money decisions",
+    "Business & Startups": "business strategy, startups, entrepreneurship, and company growth",
+    "Economy & Policy": "economy, macro trends, public policy, and how they affect money decisions",
+  },
+  goal: {
+    "Grow Wealth": "grow long-term wealth through disciplined investing and compounding",
+    "Buy Property": "buy property or prepare financially for a home purchase",
+    "Child's Education": "build a dedicated education fund for a child",
+    "Early Retirement": "retire early and build long-term financial independence",
+  },
+  investments: {
+    "Just Starting Out": "just starting out with little or no investing experience",
+    "Mostly Mutual Funds": "mostly mutual funds and goal-based investing",
+    "Diversified Portfolio": "a diversified portfolio across multiple asset types",
+    "Heavy in Stocks/ETFs": "heavily invested in stocks and ETFs with active market exposure",
+  },
+  risk: {
+    "Conservative": "conservative and low-risk, preferring stability over high returns",
+    "Moderate": "moderate risk, comfortable with balanced growth and some market volatility",
+    "Aggressive": "aggressive and high-risk, willing to accept volatility for higher return potential",
+    "Not Sure Yet": "still unsure about risk tolerance and needs guidance before choosing products",
+  },
+  engagement: {
+    "Daily Articles": "daily articles and regular editorial guidance",
+    "Deep Courses": "deep courses, masterclasses, and structured learning",
+    "Smart Alerts": "smart alerts, nudges, and timely actionable updates",
+    "Data & Analysis": "data tools, analysis, screeners, and research-led workflows",
+  },
+};
+
+function stripLeadingEmoji(value) {
+  return String(value || "").replace(/^[^\w\s]+\s*/, "").trim();
+}
+
+function semanticProfileValue(key, value) {
+  const cleaned = stripLeadingEmoji(value);
+  return PROFILE_SEMANTICS[key]?.[cleaned] || cleaned;
+}
+
+function onboardingSelectionsArray(profile) {
+  return Array.isArray(profile?.et_onboarding) ? profile.et_onboarding : [];
+}
+
+function onboardingSelectionMap(profile) {
+  const rows = onboardingSelectionsArray(profile);
+  return rows.reduce((acc, item) => {
+    if (item?.id) acc[item.id] = item;
+    return acc;
+  }, {});
+}
+
 function mapProfileToConversation(profile) {
+  const onboarding = onboardingSelectionsArray(profile);
+  const onboardingLine = onboarding.length
+    ? ` They also shared these onboarding preferences: ${onboarding.map((o) => `${o.question}: ${o.title}`).join("; ")}.`
+    : "";
   return [
-    `The user is interested in ${profile.interests || "financial intelligence"}.`,
-    `Their main goal is ${profile.goal || "building a stronger financial plan"}.`,
-    `Their current portfolio looks like ${profile.investments || "an early-stage investing setup"}.`,
-    `Their risk appetite is ${profile.risk || "moderate"}.`,
-    `They prefer ${profile.engagement || "smart ET updates"} as their engagement mode.`,
+    `The user is interested in ${semanticProfileValue("interests", profile.interests) || "financial intelligence"}.`,
+    `Their main goal is ${semanticProfileValue("goal", profile.goal) || "building a stronger financial plan"}.`,
+    `Their current portfolio looks like ${semanticProfileValue("investments", profile.investments) || "an early-stage investing setup"}.`,
+    `Their risk appetite is ${semanticProfileValue("risk", profile.risk) || "moderate risk with some uncertainty"}.`,
+    `They prefer ${semanticProfileValue("engagement", profile.engagement) || "smart ET updates"} as their engagement mode.${onboardingLine}`,
     "Build the full ET Concierge journey across recommendations, RAG, onboarding, cross-sell, marketplace, and action dispatch.",
   ].join(" ");
 }
 
 function mapProfileCard(profile, conciergeData) {
   const persona = conciergeData?.core?.persona;
-  if (!persona) return profile;
+  const onboarding = Array.isArray(profile.et_onboarding) ? profile.et_onboarding : [];
+  if (!persona) return { ...profile, et_onboarding: onboarding };
 
   return {
     interests: persona.persona_type || profile.interests,
@@ -1195,6 +1317,7 @@ function mapProfileCard(profile, conciergeData) {
     investments: profile.investments,
     risk: `${persona.risk_appetite || profile.risk} · ${persona.risk_score ?? "?"}/10`,
     engagement: profile.engagement,
+    et_onboarding: onboarding,
   };
 }
 
@@ -1308,15 +1431,6 @@ function actionItemsFromData(conciergeData) {
   return [...recActions, ...dispatchActions].slice(0, 6);
 }
 
-function onboardingItemsFromData(conciergeData) {
-  const items = extractArray(conciergeData?.ecosystem?.onboarding_path?.phases);
-  return items.map((item, index) => ({
-    title: item.title || item.phase_id || `Step ${index + 1}`,
-    desc: (extractArray(item.objectives).join(" · ")) || (extractArray(item.host_prompts).join(" ")) || "Suggested ET onboarding move.",
-    meta: `${item.estimated_seconds || 60}s · ${item.phase_id || `Phase ${index + 1}`}`,
-  }));
-}
-
 function touchpointItemsFromData(conciergeData) {
   const items = extractArray(conciergeData?.ecosystem?.prioritized_touchpoints);
   return items.map((item, index) => ({
@@ -1363,9 +1477,10 @@ function alertItemsFromData(conciergeData, activeChannels) {
 function riskSummaryFromData(profile, conciergeData) {
   const persona = conciergeData?.core?.persona || {};
   const rawScore = Number(persona.risk_score);
+  const normalizedRisk = stripLeadingEmoji(profile.risk);
   const score = Number.isFinite(rawScore)
     ? Math.max(0, Math.min(100, rawScore * 10))
-    : ({ "🟢 Conservative": 25, "🟡 Moderate": 55, "🔴 Aggressive": 85, "🤷 Not Sure Yet": 40 }[profile.risk] || 0);
+    : ({ Conservative: 25, Moderate: 55, Aggressive: 85, "Not Sure Yet": 40 }[normalizedRisk] || 0);
   const label = score > 70 ? "Aggressive" : score > 40 ? "Moderate" : score > 0 ? "Conservative" : "Not set";
   return { score, label };
 }
@@ -1483,7 +1598,41 @@ function FlashProfileDeck({ node, step, total, value, onValueChange, onOption, o
   );
 }
 
-function ExpandableItems({ items, expandedKey, onToggle, onAskConcierge }) {
+function OptionalOnboardingQuestions({ selections, onSelect }) {
+  return (
+    <div className="ws-list">
+      {OPTIONAL_ONBOARDING_QUESTIONS.map((question) => {
+        const chosen = selections[question.id];
+        return (
+          <div className="ws-onb-phase" key={question.id}>
+            <div className="ws-onb-title">{question.title}</div>
+            <div className="ws-onb-chips">
+              {question.options.map((option) => (
+                <button
+                  key={option.label}
+                  type="button"
+                  className={`ws-onb-chip ${chosen?.title === option.label ? "on" : ""}`}
+                  title={option.summary}
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    onSelect(question, option);
+                  }}
+                >
+                  {option.label}
+                </button>
+              ))}
+            </div>
+            {chosen?.summary ? <div className="ws-onb-sub">{chosen.summary}</div> : null}
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+function ExpandableItems({ items, expandedKey, onToggle, onAskConcierge, primaryLabel, onPrimary }) {
+  const label = primaryLabel || "Ask concierge";
+  const runPrimary = onPrimary ?? onAskConcierge;
   return (
     <div className="ws-list">
       {items.map((item, index) => {
@@ -1512,10 +1661,10 @@ function ExpandableItems({ items, expandedKey, onToggle, onAskConcierge }) {
                     className="ws-btn"
                     onClick={(event) => {
                       event.stopPropagation();
-                      onAskConcierge(item);
+                      if (runPrimary) runPrimary(item);
                     }}
                   >
-                    Ask concierge
+                    {label}
                   </button>
                 </div>
               </div>
@@ -1588,6 +1737,9 @@ function ProfileCard({ profile }) {
         </div>
         <div className="pc-tags">
           {profile.engagement && <span className="pc-tag">{profile.engagement}</span>}
+          {(Array.isArray(profile.et_onboarding) ? profile.et_onboarding : []).map((o) => (
+            <span className="pc-tag" key={o.id || o.title}>{o.title || o.id}</span>
+          ))}
           <span className="pc-tag">ET Ecosystem</span>
           <span className="pc-tag">Personalized ✓</span>
           <span className="pc-tag">Multi-Agent</span>
@@ -1598,6 +1750,32 @@ function ProfileCard({ profile }) {
 }
 
 // ─── REC CARDS ────────────────────────────────────────────────────────────────
+function WelcomeConciergeCard({ welcome }) {
+  if (!welcome?.opening_line) return null;
+  const beats = extractArray(welcome.phase_beats);
+  return (
+    <div className="ws-card ws-welcome">
+      <div className="ws-kicker">Welcome Concierge · ~3 minutes</div>
+      <div className="ws-card-title">Your host script</div>
+      <div className="ws-card-sub">Greets new and returning users, then maps them to ET surfaces and your onboarding path. Use as a guide for chat or voice.</div>
+      <div className="ws-welcome-open"><BubbleText text={welcome.opening_line} /></div>
+      {beats.map((b, i) => (
+        <div className="ws-welcome-beat" key={b.phase_id || `beat-${i}`}>
+          <div className="ws-welcome-beat-title">{String(b.phase_id || `phase_${i + 1}`).replace(/_/g, " ")}</div>
+          <div className="ws-welcome-beat-body">{b.host_script}</div>
+          {extractArray(b.listening_cues).length > 0 && (
+            <div className="ws-welcome-cues"><strong>Listen for:</strong> {extractArray(b.listening_cues).join(" · ")}</div>
+          )}
+        </div>
+      ))}
+      {welcome.closing_line && (
+        <div className="ws-welcome-close"><BubbleText text={welcome.closing_line} /></div>
+      )}
+      {welcome.script_reasoning ? <div className="ws-welcome-note">{welcome.script_reasoning}</div> : null}
+    </div>
+  );
+}
+
 function RecCards({ items, onAction }) {
   return (
     <div className="rec-list">
@@ -1753,10 +1931,44 @@ export default function ETConcierge() {
   const [, setBehaviorLog] = useState([]);
   const [, setReasoningTraces] = useState([]);
   const [conciergeData, setConciergeData] = useState(null);
+  const [, setOnboardingAnswers] = useState({});
 
   const msgsRef = useRef(null);
   const backendStatusRef = useRef("checking");
+  const profileRef = useRef(profile);
+  profileRef.current = profile;
   const profileKeys = useMemo(() => ["interests", "goal", "investments", "risk", "engagement"], []);
+
+  const [behaviorEvents, setBehaviorEvents] = useState(() => {
+    try {
+      const s = sessionStorage.getItem(BEHAVIOR_STORAGE_KEY);
+      if (s) {
+        const p = JSON.parse(s);
+        if (Array.isArray(p)) return p;
+      }
+    } catch (_) {}
+    return [];
+  });
+  useEffect(() => {
+    try {
+      sessionStorage.setItem(BEHAVIOR_STORAGE_KEY, JSON.stringify(behaviorEvents));
+    } catch (_) {}
+  }, [behaviorEvents]);
+  const behaviorEventsRef = useRef(behaviorEvents);
+  behaviorEventsRef.current = behaviorEvents;
+
+  const pushBehaviorEvent = useCallback((surface, eventType, subjectId, metadata = {}) => {
+    setBehaviorEvents((prev) => {
+      const row = {
+        event_id: `e_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`,
+        surface,
+        event_type: eventType,
+        subject_id: subjectId || "session",
+        metadata: { ...metadata, client_ts: nowTime() },
+      };
+      return [...prev.slice(-35), row];
+    });
+  }, []);
 
   const scrollBottom = useCallback(() => {
     setTimeout(() => { if (msgsRef.current) msgsRef.current.scrollTop = msgsRef.current.scrollHeight; }, 60);
@@ -1788,12 +2000,17 @@ export default function ETConcierge() {
     setBehaviorLog([]);
     setReasoningTraces([]);
     setConciergeData(null);
+    setOnboardingAnswers({});
     setThinking(false);
     setInputVal("");
     setActiveAgent("concierge");
     setActiveNav("chat");
     setDeckInput("");
     setExpandedWorkspaceItem(null);
+    setBehaviorEvents([]);
+    try {
+      sessionStorage.removeItem(BEHAVIOR_STORAGE_KEY);
+    } catch (_) {}
   }, []);
 
   const showBackendOffline = useCallback(() => {
@@ -1842,6 +2059,7 @@ export default function ETConcierge() {
           conversation,
           rag_query: `What ET guidance best supports ${nextProfile.goal || "this user's financial goal"}?`,
           use_live_llm: true,
+          behavior_events: behaviorEventsRef.current,
         }),
       });
 
@@ -1850,11 +2068,12 @@ export default function ETConcierge() {
       setConciergeData(normalizeResponse(payload));
       showToast("âœ…", "Live model pipeline connected");
       logBehavior("pipeline_live", {});
+      pushBehaviorEvent("et_app", "pipeline_refresh", "plan", { source: "profile_complete" });
     } catch (error) {
       setConciergeData(null);
       logBehavior("pipeline_fallback", {});
     }
-  }, [logBehavior, showToast]);
+  }, [logBehavior, showToast, pushBehaviorEvent]);
 
   const fetchChatReply = useCallback(async (userMessage) => {
     const transcript = messages
@@ -1870,6 +2089,7 @@ export default function ETConcierge() {
         transcript,
         message: userMessage,
         use_live_llm: true,
+        behavior_events: behaviorEventsRef.current,
       }),
     });
 
@@ -1968,7 +2188,7 @@ export default function ETConcierge() {
 
     let newProfile = { ...profile };
     if (node.profileKey) {
-      newProfile[node.profileKey] = reply.replace(/^[^\w\s]+\s*/, "");
+      newProfile[node.profileKey] = stripLeadingEmoji(reply);
       setProfile(newProfile);
       const filled = profileKeys.filter(k => newProfile[k]).length;
       setProfilePct(Math.round((filled / profileKeys.length) * 100));
@@ -1985,13 +2205,14 @@ export default function ETConcierge() {
     if (!val || thinking || backendStatus !== "online" || profilePct < 100) return false;
     addMessage("user", val);
     logBehavior("freetext", { len: val.length });
+    pushBehaviorEvent("concierge", "chat_message", "chat", { len: val.length });
     setActiveNudge(null);
 
     const node = FLOWMAP[currentNode];
     const isQuestion = looksLikeQuestion(val);
 
     if (node?.profileKey && !isQuestion) {
-      const newProfile = { ...profile, [node.profileKey]: val.replace(/^[^\w\s]+\s*/, "") };
+      const newProfile = { ...profile, [node.profileKey]: stripLeadingEmoji(val) };
       setProfile(newProfile);
       const filled = profileKeys.filter(k => newProfile[k]).length;
       setProfilePct(Math.round((filled / profileKeys.length) * 100));
@@ -2007,6 +2228,10 @@ export default function ETConcierge() {
     setActiveAgent("rag");
     try {
       const result = await fetchChatReply(val);
+      const mode = result?.mode || "";
+      const profileLed = typeof mode === "string" && mode.includes("profile");
+      if (profileLed) setActiveAgent("profiler");
+      else if (mode === "llm_rag" || mode === "llm_direct" || mode === "heuristic") setActiveAgent("rag");
       if (result?.artifact) {
         setConciergeData(result.artifact);
       }
@@ -2015,7 +2240,7 @@ export default function ETConcierge() {
         result?.message || "I couldn't generate a useful answer just now. Please try again.",
         "text",
         null,
-        { showFeedback: false, agent: "rag" },
+        { showFeedback: false, agent: profileLed ? "profiler" : "rag" },
       );
       if (node?.profileKey) {
         addMessage(
@@ -2039,7 +2264,7 @@ export default function ETConcierge() {
     } finally {
       setThinking(false);
     }
-  }, [thinking, backendStatus, profilePct, addMessage, logBehavior, currentNode, profile, profileKeys, gotoNode, fetchChatReply]);
+  }, [thinking, backendStatus, profilePct, addMessage, logBehavior, pushBehaviorEvent, currentNode, profile, profileKeys, gotoNode, fetchChatReply]);
 
   const handleSend = useCallback(async () => {
     const val = inputVal.trim();
@@ -2085,7 +2310,6 @@ export default function ETConcierge() {
   const liveMasterclassRecommendations = useMemo(() => masterclassItemsFromData(conciergeData, MASTERCLASS_RECS), [conciergeData]);
   const liveFinancialData = useMemo(() => financialWidgetData(profile, conciergeData), [profile, conciergeData]);
   const recommendedActions = useMemo(() => actionItemsFromData(conciergeData), [conciergeData]);
-  const onboardingItems = useMemo(() => onboardingItemsFromData(conciergeData), [conciergeData]);
   const touchpointItems = useMemo(() => touchpointItemsFromData(conciergeData), [conciergeData]);
   const alertItems = useMemo(() => alertItemsFromData(conciergeData, activeChannels), [conciergeData, activeChannels]);
   const riskSummary = useMemo(() => riskSummaryFromData(profile, conciergeData), [profile, conciergeData]);
@@ -2114,13 +2338,39 @@ export default function ETConcierge() {
     await submitChatPrompt(prompt);
   }, [showToast, submitChatPrompt]);
 
+  const onboardingSelectionState = useMemo(() => onboardingSelectionMap(profile), [profile]);
+
+  const applyOnboardingAnswer = useCallback((question, option) => {
+    const nextSelection = {
+      id: question.id,
+      question: question.title,
+      title: option.label,
+      summary: option.summary,
+    };
+    const nextProfile = {
+      ...profileRef.current,
+      et_onboarding: [
+        ...onboardingSelectionsArray(profileRef.current).filter((item) => item.id !== question.id),
+        nextSelection,
+      ],
+    };
+    setOnboardingAnswers((prev) => ({ ...prev, [question.id]: nextSelection }));
+    setProfile(nextProfile);
+    showToast("✨", `${question.title} updated`);
+    logBehavior("onboarding_optional_answer", { question: question.id, answer: option.label });
+    pushBehaviorEvent("et_app", "onboarding_answer", String(question.id), { answer: option.label });
+    if (profileKeys.every((k) => nextProfile[k])) {
+      fetchConciergeData(nextProfile);
+    }
+  }, [fetchConciergeData, logBehavior, profileKeys, showToast, pushBehaviorEvent]);
+
   const completeProfileStep = useCallback((rawValue) => {
     if (!activeProfileNode || backendStatus !== "online") return;
 
     const answer = String(rawValue || "").trim();
     if (!answer) return;
 
-    const newProfile = { ...profile, [activeProfileNode.profileKey]: answer.replace(/^[^\w\s]+\s*/, "") };
+    const newProfile = { ...profile, [activeProfileNode.profileKey]: stripLeadingEmoji(answer) };
     const filled = profileKeys.filter((key) => newProfile[key]).length;
 
     setProfile(newProfile);
@@ -2233,6 +2483,15 @@ export default function ETConcierge() {
                   </div>
                 </div>
               ))}
+              {(Array.isArray(profile.et_onboarding) && profile.et_onboarding.length > 0) && (
+                <div className="pf-row filled" style={{ marginTop: 6 }}>
+                  <div className="pf-dot" />
+                  <div className="pf-key">ET path</div>
+                  <div className="pf-val" title={profile.et_onboarding.map((o) => o.title).join(" · ")}>
+                    {profile.et_onboarding.length} step{profile.et_onboarding.length === 1 ? "" : "s"}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
 
@@ -2246,7 +2505,12 @@ export default function ETConcierge() {
               { id: "notifs", icon: "🔔", label: "Alerts & Actions" },
             ].map(n => (
               <button key={n.id} className={`nav-btn ${activeNav === n.id ? "active" : ""}`}
-                onClick={() => { setActiveNav(n.id); setExpandedWorkspaceItem(null); if (n.id !== "chat") showToast("🔄", `Switching to ${n.label}…`); }}>
+                onClick={() => {
+                  setActiveNav(n.id);
+                  setExpandedWorkspaceItem(null);
+                  pushBehaviorEvent("et_app", "workspace_view", n.id, { label: n.label });
+                  if (n.id !== "chat") showToast("🔄", `Switching to ${n.label}…`);
+                }}>
                 <span className="ni">{n.icon}</span> {n.label}
                 {n.id === "notifs" && feedbacks.length > 0 && <span className="nav-badge">{feedbacks.length}</span>}
               </button>
@@ -2408,14 +2672,38 @@ export default function ETConcierge() {
                   <div className="ws-stat-row">
                     <div className="ws-stat"><div className="ws-stat-label">Profile fit</div><div className="ws-stat-value">{profilePct}%</div></div>
                     <div className="ws-stat"><div className="ws-stat-label">Product picks</div><div className="ws-stat-value">{liveRecommendations.length}</div></div>
-                    <div className="ws-stat"><div className="ws-stat-label">Next actions</div><div className="ws-stat-value">{recommendedActions.length || onboardingItems.length || 0}</div></div>
+                    <div className="ws-stat"><div className="ws-stat-label">Next actions</div><div className="ws-stat-value">{recommendedActions.length || Object.keys(onboardingSelectionState).length || 0}</div></div>
                   </div>
                 </div>
                 <div className="workspace-grid">
+                  {conciergeData?.welcome_script?.opening_line && (
+                    <div className="ws-grid-span2">
+                      <WelcomeConciergeCard welcome={conciergeData.welcome_script} />
+                    </div>
+                  )}
+                  <div className="ws-grid-span2">
+                    <div className="ws-card">
+                      <div className="ws-kicker">Services marketplace</div>
+                      <div className="ws-card-sub">Conversational AI routes loans, insurance, cards, and wealth offers via ET partnerships — surfaced here from your live profile.</div>
+                      {livePartnerRecommendations.length ? (
+                        <RecCards
+                          items={livePartnerRecommendations}
+                          onAction={(a) => {
+                            pushBehaviorEvent("marketplace", "partner_offer_click", a, {});
+                            logBehavior("partner_workspace_click", { a });
+                            routeToChat(`Tell me about the partner offer "${a}" and whether it fits my profile and goals.`, "Opened chat for marketplace offer");
+                          }}
+                        />
+                      ) : (
+                        <div className="ws-empty">Complete your profile and run the concierge plan to load partner offers from the marketplace agent.</div>
+                      )}
+                    </div>
+                  </div>
                   <div className="ws-card">
                     <div className="ws-kicker">Matched picks</div>
                     <RecCards items={liveRecommendations} onAction={a => {
                       logBehavior("rec_click", { a });
+                      pushBehaviorEvent("markets", "et_product_click", a, {});
                       routeToChat(`I'm reviewing "${a}". What is it, why does it fit my profile, and should I act on it now?`, "Moved to chat with this recommendation");
                     }} />
                     <div className="ws-actions">
@@ -2439,18 +2727,23 @@ export default function ETConcierge() {
                     ) : <div className="ws-empty">The backend has not returned action items yet. Ask the agent a few questions in Chat and this panel will fill in.</div>}
                   </div>
                   <div className="ws-card">
-                    <div className="ws-kicker">Onboarding path</div>
-                    {onboardingItems.length ? (
-                      <ExpandableItems
-                        items={onboardingItems.map((item) => ({
-                          ...item,
-                          detail: `${item.desc} This is part of your personalized ET onboarding path.`,
-                        }))}
-                        expandedKey={expandedWorkspaceItem}
-                        onToggle={setExpandedWorkspaceItem}
-                        onAskConcierge={(item) => routeToChat(`Walk me through this onboarding step in a simple way: ${item.title}. ${item.desc}`, "Opened chat for onboarding help")}
-                      />
-                    ) : <div className="ws-empty">Onboarding guidance will appear here after the concierge plan is generated.</div>}
+                    <div className="ws-kicker">Optional profile questions</div>
+                    <div className="ws-card-sub" style={{ marginTop: 6 }}>
+                      Pick any of these if you want the concierge to understand your ET use case better. These answers are added to your live profile and reused across chat, recommendations, navigator insights, and alerts.
+                    </div>
+                    <OptionalOnboardingQuestions
+                      selections={onboardingSelectionState}
+                      onSelect={applyOnboardingAnswer}
+                    />
+                    <div className="ws-actions">
+                      <button
+                        type="button"
+                        className="ws-btn secondary"
+                        onClick={() => routeToChat("Use my profile and onboarding preferences to suggest the best ET path for me right now.", "Opened chat with your updated profile")}
+                      >
+                        Ask using updated profile
+                      </button>
+                    </div>
                   </div>
                   <div className="ws-card">
                     <div className="ws-kicker">More ET surfaces</div>

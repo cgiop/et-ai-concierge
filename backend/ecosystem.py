@@ -401,6 +401,18 @@ def _heuristic_cross_sell(
     )
 
 
+def _resolve_behavior_events(
+    behavior_events: list[BehaviorEvent] | None,
+) -> list[BehaviorEvent]:
+    """
+    Use real client touchpoint signals when provided; otherwise demo samples so
+    the cross-sell engine always has material to rank in offline / hackathon mode.
+    """
+    if behavior_events is not None and len(behavior_events) > 0:
+        return behavior_events
+    return sample_behavior_events()
+
+
 def run_cross_sell(
     persona: PersonaProfile,
     navigator: FinancialLifeNavigatorResult,
@@ -408,7 +420,7 @@ def run_cross_sell(
     catalog_excerpt: str,
     client: Any | None = None,
 ) -> CrossSellBundle:
-    events = behavior_events if behavior_events is not None else sample_behavior_events()
+    events = _resolve_behavior_events(behavior_events)
     offerings = load_ecosystem_catalog()
     if not _gemini_ready() and client is None:
         return _heuristic_cross_sell(persona, events, offerings)
