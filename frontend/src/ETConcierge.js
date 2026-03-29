@@ -6,37 +6,38 @@ const API_BASE = process.env.REACT_APP_API_BASE || "http://127.0.0.1:8000";
 const css = `
   @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;0,900;1,600&family=Syne:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
 
-  /* ══ NEW THEME — dark + coral/orange accents (DEFAULT) ══ */
+  /* ══ ICE THEME (LIGHT ✨) — NOW DEFAULT ══ */
   :root {
-    --bg: #141414;
-    --bg2: #1a1a1a;
-    --bg3: #1f1f1f;
+    --bg: #f1f5f9;
+    --bg2: #ffffff;
+    --bg3: #e2e8f0;
     --panel: transparent;
-    --surface: #232323;
-    --surface2: #2c2c2c;
-    --border: rgba(255,255,255,0.07);
-    --border2: rgba(255,255,255,0.12);
+    --surface: #ffffff;
+    --surface2: #f8fafc;
+    --border: rgba(15,23,42,0.1); 
+    --border2: rgba(15,23,42,0.15);
 
-    --gold: #FF6F61;
-    --gold2: #ff8a7e;
-    --gold-dim: rgba(255,111,97,0.14);
-    --gold-glow: rgba(255,111,97,0.18);
+    /* Cool blue and violet accents */
+    --gold: #2563eb; 
+    --gold2: #1d4ed8;
+    --gold-dim: rgba(37,99,235,0.1);
+    --gold-glow: rgba(37,99,235,0.15);
 
-    --cyan: #FF4500;
-    --cyan2: #ff6533;
-    --cyan-dim: rgba(255,69,0,0.12);
+    --cyan: #7c3aed; 
+    --cyan2: #6d28d9;
+    --cyan-dim: rgba(124,58,237,0.1);
 
-    --violet: #DAA520;
-    --violet-dim: rgba(218,165,32,0.13);
+    --violet: #e11d48; 
+    --violet-dim: rgba(225,29,72,0.1);
 
-    --green: #3dca7e;
-    --green-dim: rgba(61,202,126,0.12);
-    --red: #ff5c5c;
-    --red-dim: rgba(255,92,92,0.12);
+    --green: #059669;
+    --green-dim: rgba(5,150,105,0.1);
+    --red: #dc2626;
+    --red-dim: rgba(220,38,38,0.1);
 
-    --text: #F5E8D8;
-    --text2: #c4b09a;
-    --text3: #7a6e66;
+    --text: #020617; 
+    --text2: #1e293b; 
+    --text3: #475569;
 
     --sidebar-w: 260px;
     --reasoning-w: 310px;
@@ -148,38 +149,37 @@ const css = `
     --text3: #78716c;
   }
 
-  /* ══ ICE THEME (LIGHT 2) ══ */
-  .theme-ice {
-    --bg: #f8fafc;
-    --bg2: #f1f5f9;
-    --bg3: #e2e8f0;
+  /* ══ CORAL THEME (DARK 🔥) — ACCENT MODE ══ */
+  .theme-warm {
+    --bg: #141414;
+    --bg2: #1a1a1a;
+    --bg3: #1f1f1f;
     --panel: transparent;
-    --surface: #ffffff;
-    --surface2: #fdfdfd;
-    --border: rgba(15,23,42,0.06);
-    --border2: rgba(15,23,42,0.12);
+    --surface: #232323;
+    --surface2: #2c2c2c;
+    --border: rgba(255,255,255,0.07);
+    --border2: rgba(255,255,255,0.12);
 
-    /* Cool blue and violet accents */
-    --gold: #3b82f6; 
-    --gold2: #2563eb;
-    --gold-dim: rgba(59,130,246,0.1);
-    --gold-glow: rgba(59,130,246,0.15);
+    --gold: #FF6F61;
+    --gold2: #ff8a7e;
+    --gold-dim: rgba(255,111,97,0.14);
+    --gold-glow: rgba(255,111,97,0.18);
 
-    --cyan: #8b5cf6;
-    --cyan2: #7c3aed;
-    --cyan-dim: rgba(139,92,246,0.1);
+    --cyan: #FF4500;
+    --cyan2: #ff6533;
+    --cyan-dim: rgba(255,69,0,0.12);
 
-    --violet: #f43f5e;
-    --violet-dim: rgba(244,63,94,0.1);
+    --violet: #DAA520;
+    --violet-dim: rgba(218,165,32,0.13);
 
-    --green: #10b981;
-    --green-dim: rgba(16,185,129,0.1);
-    --red: #ef4444;
-    --red-dim: rgba(239,68,68,0.1);
+    --green: #3dca7e;
+    --green-dim: rgba(61,202,126,0.12);
+    --red: #ff5c5c;
+    --red-dim: rgba(255,92,92,0.12);
 
-    --text: #0f172a;
-    --text2: #334155;
-    --text3: #64748b;
+    --text: #F5E8D8;
+    --text2: #c4b09a;
+    --text3: #7a6e66;
   }
 
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -1732,7 +1732,7 @@ function NudgeBar({ nudge, onAction }) {
 
 // ─── MAIN APP ─────────────────────────────────────────────────────────────────
 export default function ETConcierge() {
-  const [theme, setTheme] = useState("warm"); // 'warm' = new default, 'dark' = legacy
+  const [theme, setTheme] = useState("ice"); // 'ice' normalized baseline default
   const [backendStatus, setBackendStatus] = useState("checking");
   const [messages, setMessages] = useState([]);
   const [inputVal, setInputVal] = useState("");
@@ -2171,7 +2171,7 @@ export default function ETConcierge() {
   }, [activeProfileNode, addMessage, backendStatus, fetchConciergeData, logBehavior, profile, profileKeys, scrollBottom]);
 
   return (
-    <div className={`app-root${theme !== "warm" ? ` theme-${theme}` : ""}`}>
+    <div className={`app-root${theme !== "ice" ? ` theme-${theme}` : ""}`}>
       <style>{css}</style>
       <div className="bg-grid" />
       <div className="app" style={{ position: "relative", zIndex: 1 }}>
@@ -2301,11 +2301,8 @@ export default function ETConcierge() {
             <div className="hdr-btns">
               <div className="theme-select-wrap" title="Select Theme">
                 <select className="theme-select" value={theme} onChange={(e) => setTheme(e.target.value)}>
-                  <option value="warm">🌊 Coral Theme</option>
-                  <option value="dark">🎨 Classic Theme</option>
-                  <option value="midnight">🌌 Midnight Mode</option>
-                  <option value="light">☕ Cream Mode</option>
                   <option value="ice">❄️ Ice Mode</option>
+                  <option value="warm">🌊 Coral Theme</option>
                 </select>
                 <span className="ts-chevron">▼</span>
               </div>
