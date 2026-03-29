@@ -132,6 +132,10 @@ def _extract_topic_after_colon(message: str) -> str | None:
     if ":" not in text:
         return None
     topic = text.split(":", 1)[1].strip()
+    for marker in (". Tell me", ". What", ". Explain", ". Help", ". Walk me", ". Should", ". Whether"):
+        if marker in topic:
+            topic = topic.split(marker, 1)[0].strip()
+            break
     return _trim_sentence(topic) if topic else None
 
 
@@ -448,6 +452,14 @@ def _rag_grounded_fallback_reply(message: str, artifact: dict[str, Any]) -> str:
         reply = (
             "Start by creating one focused ET Markets watchlist around the goal you care about most right now. "
             "Add only a few names or instruments first, then turn on the alerts and news tracking that help you review them consistently."
+        )
+        if titles:
+            reply += f"\n\nRelevant ET reads: {', '.join(titles[:2])}."
+        return reply
+    if _message_mentions(lower, "i'm reviewing", "i am reviewing", "et recommendation") and topic:
+        reply = (
+            f"{topic} is being surfaced because it appears to match your current profile, goal, or ET journey. "
+            "First check what role it plays for you, then decide whether it deserves action now or should stay on your shortlist."
         )
         if titles:
             reply += f"\n\nRelevant ET reads: {', '.join(titles[:2])}."

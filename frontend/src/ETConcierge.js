@@ -2416,7 +2416,7 @@ export default function ETConcierge() {
                     <div className="ws-kicker">Matched picks</div>
                     <RecCards items={liveRecommendations} onAction={a => {
                       logBehavior("rec_click", { a });
-                      routeToChat(`I am reviewing this ET recommendation: ${a}. Tell me what it is, why it fits my profile, and whether I should act on it now.`, "Moved to chat with this recommendation");
+                      routeToChat(`I'm reviewing "${a}". What is it, why does it fit my profile, and should I act on it now?`, "Moved to chat with this recommendation");
                     }} />
                     <div className="ws-actions">
                       <button type="button" className="ws-btn secondary" onClick={() => routeToChat("What other ET options match my profile right now, and which one should I open next?", "Opened chat for more suggestions")}>
